@@ -1,29 +1,33 @@
 import Exceptions.InsufficientParametersException;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Node {
-    private InetAddress my_address;
-    private Set<InetAddress> peers;
-    private InetAddress target_address;
+    private String my_address;
+    private Set<String> peers;
+    private String target_address;
     private int outside_port;
     private int protected_port = 6666;
-    private ServerSocket external_socket;
+    private ServerSocket external_socket_in;
+    private Socket external_socket_out;
     private DatagramSocket internal_socket_out, internal_socket_in;
+    private SortedSet<Request> requests;
 
     public Node() {
 
         try {
-            this.my_address = InetAddress.getLocalHost();
+            this.my_address = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
 
         peers = new HashSet<>();
+        Comparator comparator = new RequestComparator();
+        requests = new TreeSet(comparator);
+
         try {
             internal_socket_in = new DatagramSocket();
             internal_socket_out = new DatagramSocket();
@@ -43,7 +47,7 @@ public class Node {
         for (int i = 0; i < args.length; i++){
             if (args[i].equals("target-server")){
                 try {
-                    target_address = InetAddress.getByName(args[i+1]);
+                    target_address = InetAddress.getByName(args[i+1]).getHostAddress();
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
@@ -58,8 +62,8 @@ public class Node {
             if (args[i].equals("overlay-peers")){
                 for (int j = i+1; j < args.length; j++){
                     try {
-                        if (!InetAddress.getByName(args[j]).equals(my_address))
-                            peers.add(InetAddress.getByName(args[j]));
+                        if (!InetAddress.getByName(args[j]).getHostAddress().equals(my_address))
+                            peers.add(InetAddress.getByName(args[j]).getHostAddress());
                     } catch (UnknownHostException e) {
                         e.printStackTrace();
                     }
@@ -84,15 +88,49 @@ public class Node {
     }
 
     // Esta função inicializa o socket tcp na porta definida e cria uma thread para gerir os pedidos que chegam
-    public void startTCPSocket() throws IOException {
-        external_socket = new ServerSocket(this.outside_port);
+    public void startTCPListener() throws IOException {
+        external_socket_in = new ServerSocket(this.outside_port);
 
-        while (true) {
-            Socket socket = external_socket.accept();
-            NodeWorker nw = new NodeWorker(socket);
-            new Thread(nw).start();
-        }
+        Thread listener = new Thread(){
+            public void run(){
+                while (true) {
+                    Socket socket = null;
+                    try {
+                        socket = external_socket_in.accept();
+                        NodeTCPListener nl = new NodeTCPListener(socket, requests, target_address);
+                        new Thread(nl).start();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        listener.start();
+
     }
 
+    // Esta função é usada para o nó comunicar com o servidor de destino
+    public void startTCPSpeaker(){
+        Thread speaker = new Thread(){
+            public void run(){
 
+                    try {
+                        external_socket_out = new Socket(target_address, outside_port);
+                        NodeTCPSpeaker ns = new NodeTCPSpeaker(external_socket_out, requests, target_address);
+                        new Thread(ns).start();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+        };
+
+        speaker.start();
+    }
+
+    // so para testes
+    public void queuesize(){
+        System.out.println("uelele: " + this.requests.size());
+    }
 }

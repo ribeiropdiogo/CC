@@ -1,5 +1,7 @@
 import Exceptions.InsufficientParametersException;
 
+import java.util.concurrent.TimeUnit;
+
 public class AnonGW {
 
     private static Node node;
@@ -9,7 +11,15 @@ public class AnonGW {
         try {
             node.setupNode(args);
             node.printNodeInfo();
-            node.startTCPSocket();
+            node.startTCPListener();
+            node.startTCPSpeaker();
+
+            /*
+            while (true){
+                TimeUnit.SECONDS.sleep(5);
+                node.queuesize();
+            }*/
+
         } catch (Exception e){
             System.out.println(e);
         }
