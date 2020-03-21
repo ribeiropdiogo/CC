@@ -15,7 +15,7 @@ install: jar
 	sudo chmod 0777 /usr/local/lib
 	sudo chmod 0777 /usr/local/bin
 	cp $(PROJ).jar /usr/local/lib
-	echo "#!/bin/bash\njava -jar /usr/local/lib/$(PROJ).jar\n" > /usr/local/bin/$(PROJ)
+	echo "#!/bin/bash\njava -jar /usr/local/lib/$(PROJ).jar \"\$$@\"\n" > /usr/local/bin/$(PROJ)
 	make clean
 	sudo chmod +x /usr/local/bin/$(PROJ)
 
