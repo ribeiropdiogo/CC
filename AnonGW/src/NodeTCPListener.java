@@ -36,10 +36,7 @@ public class NodeTCPListener implements Runnable{
             final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(socket.getOutputStream()), "UTF-8"));
 
             final String data = in.readLine();
-
-            while (data != null && running) {
-                //System.out.println(data);
-
+            System.out.println("> Listener: Established new connection with outside");
                 if (!socket.getRemoteSocketAddress().toString().equals(target_address)) {
                     final Request r = new Request(socket.getRemoteSocketAddress().toString().substring(1));
                     r.setMessage(data);
@@ -48,18 +45,20 @@ public class NodeTCPListener implements Runnable{
 
                     if (!repeatedRequest(socket.getRemoteSocketAddress().toString().substring(1), data)) {
                         this.requests.add(r);
+                        out.write("");
                         System.out.println("> Listener: Added new request");
                         System.out.println("> Listener: Queue size is " + requests.size());
 
-                        Thread answer = new Thread(){
-                            public void run() {
-                                while (true) {
+
+                                while (running) {
+                                    /*
                                     try {
                                         TimeUnit.SECONDS.sleep(5);
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
-                                    }
+                                    }*/
                                     while (!r.getStatus().equals("so")) {
+                                        //System.out.println(r.getStatus());
                                         try {
                                             if (r.getStatus().equals("sd")) {
                                                 System.out.println("> Listener: Request has been served at destination!");
@@ -70,34 +69,25 @@ public class NodeTCPListener implements Runnable{
                                                 for (Object s : rarray)
                                                     out.write(s.toString());
 
-                                            /* This horseshit works
-                                            out.write("HTTP/1.1 200 Ok\r\n");
-                                            out.write("Content-Type: text/html\r\n");
-                                            out.write("Content-Length: 12");
-                                            out.write("\r\n\r\n");
-                                            out.write("it's a trap!");
-                                            */
-
                                                 out.flush();
                                                 r.setStatus("so");
                                                 System.out.println("> Listener: Request has been served at origin!");
+
+                                                requests.remove(r);
                                             }
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
                                     }
-                                    //requests.remove(r);
-                                    //System.out.println("> Listener: Request has been removed from Queue!");
+                                    System.out.println("> Listener: Request has been removed from Queue!");
                                     running = false;
                                 }
-                            }
-                        };
 
-                        answer.start();
+
                     }
 
 
-                }
+
             }
 
 

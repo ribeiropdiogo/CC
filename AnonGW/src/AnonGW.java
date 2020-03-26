@@ -11,7 +11,9 @@ public class AnonGW {
         try {
             node.setupNode(args);
             node.printNodeInfo();
+            System.out.println("Listener Start");
             node.startTCPListener();
+            System.out.println("Speaker Start");
             node.startTCPSpeaker();
 
             /*

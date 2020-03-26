@@ -116,8 +116,7 @@ public class Node {
             public void run(){
 
                     try {
-                        external_socket_out = new Socket(target_address, outside_port);
-                        NodeTCPSpeaker ns = new NodeTCPSpeaker(external_socket_out, requests, target_address);
+                        NodeTCPSpeaker ns = new NodeTCPSpeaker(outside_port, requests, target_address);
                         new Thread(ns).start();
                     } catch (Exception e) {
                         e.printStackTrace();

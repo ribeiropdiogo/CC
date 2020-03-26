@@ -29,7 +29,7 @@ public class Request {
         return this.creationTime;
     }
 
-    public void setMessage(String message) {
+    public synchronized void setMessage(String message) {
         this.message = message;
     }
 
@@ -42,11 +42,11 @@ public class Request {
         return this.response.toArray();
     }
 
-    public String getStatus() {
+    public synchronized String getStatus() {
         return this.status;
     }
 
-    public void setStatus(String status) {
+    public synchronized void setStatus(String status) {
         this.status = status;
     }
 
