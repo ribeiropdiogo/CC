@@ -1,12 +1,12 @@
-import Exceptions.InsufficientParametersException;
-
 import java.util.concurrent.TimeUnit;
+import Exceptions.*;
 
 public class AnonGW {
 
     private static Node node;
 
     public static void main(String[] args) {
+	System.out.println("Coisas");
         node = new Node();
         try {
             node.setupNode(args);
