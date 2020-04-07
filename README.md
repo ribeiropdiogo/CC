@@ -6,6 +6,6 @@ Densenvolvimento de uma rede overlay de anonimização do originador através de
 
 ## Autores
 
-[Diogo Ribeiro](https://github.com/ribeiropdiogo)
-[José Monteiro](https://github.com/DxMonteiro)
-[Rui Reis](https://github.com/Syrayse)
+* [Diogo Ribeiro](https://github.com/ribeiropdiogo)
+* [José Monteiro](https://github.com/DxMonteiro)
+* [Rui Reis](https://github.com/Syrayse)
