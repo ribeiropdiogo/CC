@@ -1,7 +1,10 @@
+package Model;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public final class AnonPacket {
+
 	public static final int MAX_SIZE = 1000;
 	private static final int SEQ_OSET = 0;
 	private static final int ACK_OSET = 32;
@@ -12,6 +15,8 @@ public final class AnonPacket {
 
 	private ByteBuffer workbuf;
 
+	/* CONSTRUTORES */
+
 	public AnonPacket() {
 		this.workbuf = ByteBuffer.allocate(MAX_SIZE);
 	}
@@ -19,6 +24,8 @@ public final class AnonPacket {
 	public AnonPacket(byte[] buf) {
 		this.workbuf = ByteBuffer.wrap(buf);
 	}
+
+	/* GETTERS */
 
 	public byte[] getRawData() {
 		return workbuf.array();
@@ -48,6 +55,8 @@ public final class AnonPacket {
 		return getBool(FIN_FLAG);
 	}
 
+	/* SETTERS */
+
 	public AnonPacket setSyn(boolean flag) {
 		return putBool(SYN_FLAG, flag);
 	}
@@ -71,23 +80,22 @@ public final class AnonPacket {
 	public AnonPacket setData(byte[] buf) {
 		int ind = FIN_FLAG + 1;
 		int len = MAX_SIZE - ind;
-
-		if(buf.length < len)
+		if(buf.length < len) {
 			len = buf.length;
-
+		}
 		for(int i = 0; i < len; i++) {
 			workbuf.put(ind + i, buf[i]);
 		}
-
 		return this;
 	}
 
+	/* METODOS */
+
 	private AnonPacket putBool(int index, boolean val) {
 		short x = 0;
-
-		if(val)
+		if(val) {
 			x = 1;
-
+		}
 		workbuf.putShort(index, x);
 		return this;
 	}
@@ -100,10 +108,9 @@ public final class AnonPacket {
 	private boolean getBool(int index) {
 		boolean res = false;
 		short flag = workbuf.getShort(index);
-
-		if(flag == 1)
+		if(flag == 1) {
 			res = true;
-
+		}
 		return res;
 	}
 }

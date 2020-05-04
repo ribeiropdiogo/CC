@@ -1,10 +1,13 @@
+package Model;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Queue;
 import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
 
-public class NodeTCPListener implements Runnable{
+public class NodeTCPListener implements Runnable {
+
     private String target_address;
     private String source_address;
     private Socket socket;
@@ -18,7 +21,7 @@ public class NodeTCPListener implements Runnable{
         this.running = true;
     }
 
-    private boolean repeatedRequest(String sourceAddress, String request){
+    private boolean repeatedRequest(String sourceAddress, String request) {
         boolean r = false;
 
         if (this.requests.size() > 0){
@@ -61,7 +64,7 @@ public class NodeTCPListener implements Runnable{
                                         //System.out.println(r.getStatus());
                                         try {
                                             if (r.getStatus().equals("sd")) {
-                                                System.out.println("> Listener: Request has been served at destination!");
+                                                System.out.println("> Listener: Model.Request has been served at destination!");
                                                 r.setStatus("to");
 
                                                 //Envia a resposta
@@ -71,7 +74,7 @@ public class NodeTCPListener implements Runnable{
 
                                                 out.flush();
                                                 r.setStatus("so");
-                                                System.out.println("> Listener: Request has been served at origin!");
+                                                System.out.println("> Listener: Model.Request has been served at origin!");
 
                                                 requests.remove(r);
                                             }
@@ -79,7 +82,7 @@ public class NodeTCPListener implements Runnable{
                                             e.printStackTrace();
                                         }
                                     }
-                                    System.out.println("> Listener: Request has been removed from Queue!");
+                                    System.out.println("> Listener: Model.Request has been removed from Queue!");
                                     running = false;
                                 }
 

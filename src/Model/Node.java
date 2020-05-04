@@ -1,9 +1,13 @@
+package Model;
+
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import Exceptions.*;
+
 public class Node {
+
     private String my_address;
     private Set<String> peers;
     private String target_address;
@@ -13,6 +17,8 @@ public class Node {
     private Socket external_socket_out;
     private DatagramSocket internal_socket_out, internal_socket_in;
     private SortedSet<Request> requests;
+
+    /* CONSTRUTORES */
 
     public Node() {
 
@@ -42,8 +48,8 @@ public class Node {
         int set_port = 0;
         int set_peers = 0;
 
-        for (int i = 0; i < args.length; i++){
-            if (args[i].equals("target-server")){
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("target-server")) {
                 try {
                     target_address = InetAddress.getByName(args[i+1]).getHostAddress();
                 } catch (UnknownHostException e) {
@@ -52,13 +58,13 @@ public class Node {
                 set_target_server = 1;
             }
 
-            if (args[i].equals("port")){
+            if (args[i].equals("port")) {
                 outside_port = Integer.parseInt(args[i+1]);
                 set_port = 1;
             }
 
-            if (args[i].equals("overlay-peers")){
-                for (int j = i+1; j < args.length; j++){
+            if (args[i].equals("overlay-peers")) {
+                for (int j = i+1; j < args.length; j++) {
                     try {
                         if (!InetAddress.getByName(args[j]).getHostAddress().equals(my_address))
                             peers.add(InetAddress.getByName(args[j]).getHostAddress());
@@ -66,19 +72,19 @@ public class Node {
                         e.printStackTrace();
                     }
                 }
-
                 set_peers = 1;
             }
         }
 
-        if (set_target_server + set_port + set_peers < 3 )
+        if (set_target_server + set_port + set_peers < 3 ) {
             throw new InsufficientParametersException("Insufficient Parameters");
+        }
     }
 
-    public void printNodeInfo(){
-        System.out.println("Node info:");
-        System.out.println("Node Address: " + my_address);
-        System.out.print("Node peers: ");
+    public void printNodeInfo() {
+        System.out.println("Model.Node info:");
+        System.out.println("Model.Node Address: " + my_address);
+        System.out.print("Model.Node peers: ");
         System.out.println(Arrays.toString(peers.toArray()));
         System.out.println("Target Address: " + target_address);
         System.out.println("Outside Port: " + outside_port);
@@ -105,11 +111,10 @@ public class Node {
         };
 
         listener.start();
-
     }
 
     // Esta função é usada para o nó comunicar com o servidor de destino
-    public void startTCPSpeaker(){
+    public void startTCPSpeaker() {
         Thread speaker = new Thread(){
             public void run(){
 
@@ -127,7 +132,7 @@ public class Node {
     }
 
     // so para testes
-    public void queuesize(){
+    public void queuesize() {
         System.out.println("uelele: " + this.requests.size());
     }
 }

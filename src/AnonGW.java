@@ -1,5 +1,6 @@
 import java.util.concurrent.TimeUnit;
 import Exceptions.*;
+import Model.Node;
 
 public class AnonGW {
 

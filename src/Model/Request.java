@@ -1,16 +1,18 @@
+package Model;
+
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 public class Request {
+
     private long creationTime;
     private String origin_address;
     private String message;
     private List<String> response;
     private String status; // na -> não atendido / ad -> atendido no destino / sd -> servido no destino / to -> a ser transmitido à origem / so -> servido na origem / tbd -> to be deleted
 
-    public Request(String address){
+    public Request(String address) {
         this.creationTime = System.currentTimeMillis();
         this.origin_address = address;
         this.status = "na";
@@ -59,8 +61,8 @@ public class Request {
                 Objects.equals(message, request.message);
     }
 
-    public void printRequest(){
-        System.out.println("Request: ");
+    public void printRequest() {
+        System.out.println("Model.Request: ");
         System.out.println("Source: " + this.origin_address);
         System.out.println("Message: " + this.message);
         System.out.println("Creation Time: " + this.creationTime);
