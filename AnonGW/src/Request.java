@@ -10,44 +10,49 @@ public class Request {
     private List<String> response;
     private String status; // na -> não atendido / ad -> atendido no destino / sd -> servido no destino / to -> a ser transmitido à origem / so -> servido na origem / tbd -> to be deleted
 
-    public Request(String address){
+    public Request(String address, String secretKey){
         this.creationTime = System.currentTimeMillis();
-        this.origin_address = address;
-        this.status = "na";
+        this.origin_address = AES.encrypt(address, secretKey) ;;
+        this.status = AES.encrypt("na", secretKey) ;;
         this.response = new ArrayList();
     }
 
-    public String getOrigin_address() {
-        return origin_address;
+    public String getOrigin_address(String secretKey) {
+        return AES.decrypt(origin_address, secretKey);
     }
 
-    public String getMessage() {
-        return message;
+    public String getMessage(String secretKey) {
+        return AES.decrypt(message, secretKey);
     }
 
     public long getCreationTime(){
         return this.creationTime;
     }
 
-    public synchronized void setMessage(String message) {
-        this.message = message;
+    public synchronized void setMessage(String message, String secretKey) {
+        this.message = AES.encrypt(message, secretKey);
     }
 
-    public void concatenateResponse(String message){
+    public void concatenateResponse(String message, String secretKey){
         String s = message + "\r\n";
-        this.response.add(s);
+        this.response.add(AES.encrypt(s, secretKey));
     }
 
-    public Object[] getResponse(){
-        return this.response.toArray();
+    public Object[] getResponse(String secretKey){
+        List<String> decrypted = new ArrayList<>();
+
+        for (String s : this.response)
+            decrypted.add(AES.decrypt(s, secretKey));
+
+        return decrypted.toArray();
     }
 
-    public synchronized String getStatus() {
-        return this.status;
+    public synchronized String getStatus(String secretKey) {
+        return AES.decrypt(this.status, secretKey);
     }
 
-    public synchronized void setStatus(String status) {
-        this.status = status;
+    public synchronized void setStatus(String status, String secretKey) {
+        this.status = AES.encrypt(status, secretKey);
     }
 
     @Override
@@ -59,11 +64,11 @@ public class Request {
                 Objects.equals(message, request.message);
     }
 
-    public void printRequest(){
+    public void printRequest(String secretKey){
         System.out.println("Request: ");
-        System.out.println("Source: " + this.origin_address);
-        System.out.println("Message: " + this.message);
+        System.out.println("Source: " + AES.decrypt(this.origin_address, secretKey));
+        System.out.println("Message: " + AES.decrypt(this.message, secretKey));
         System.out.println("Creation Time: " + this.creationTime);
-        System.out.println("Status: " + this.status);
+        System.out.println("Status: " + AES.decrypt(this.status, secretKey));
     }
 }

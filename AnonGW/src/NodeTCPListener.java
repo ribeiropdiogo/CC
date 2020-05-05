@@ -11,6 +11,8 @@ public class NodeTCPListener implements Runnable{
     private SortedSet<Request> requests;
     private Boolean running;
 
+    final String secretKey = "HelpMeObiWanKenobi!";
+
     public NodeTCPListener(Socket s, SortedSet<Request> r, String address) {
         this.socket = s;
         this.requests = r;
@@ -23,7 +25,7 @@ public class NodeTCPListener implements Runnable{
 
         if (this.requests.size() > 0){
             for (Request req : this.requests)
-                if (req.getOrigin_address().equals(sourceAddress))
+                if (req.getOrigin_address(secretKey).equals(sourceAddress))
                     r = true;
         }
 
@@ -38,8 +40,8 @@ public class NodeTCPListener implements Runnable{
             final String data = in.readLine();
             System.out.println("> Listener: Established new connection with outside");
                 if (!socket.getRemoteSocketAddress().toString().equals(target_address)) {
-                    final Request r = new Request(socket.getRemoteSocketAddress().toString().substring(1));
-                    r.setMessage(data);
+                    final Request r = new Request(socket.getRemoteSocketAddress().toString().substring(1),secretKey);
+                    r.setMessage(data,secretKey);
 
                     //r.printRequest();
 
@@ -57,20 +59,20 @@ public class NodeTCPListener implements Runnable{
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }*/
-                                    while (!r.getStatus().equals("so")) {
+                                    while (!r.getStatus(secretKey).equals("so")) {
                                         //System.out.println(r.getStatus());
                                         try {
-                                            if (r.getStatus().equals("sd")) {
+                                            if (r.getStatus(secretKey).equals("sd")) {
                                                 System.out.println("> Listener: Request has been served at destination!");
-                                                r.setStatus("to");
+                                                r.setStatus("to",secretKey);
 
                                                 //Envia a resposta
-                                                Object[] rarray = r.getResponse();
+                                                Object[] rarray = r.getResponse(secretKey);
                                                 for (Object s : rarray)
                                                     out.write(s.toString());
 
                                                 out.flush();
-                                                r.setStatus("so");
+                                                r.setStatus("so",secretKey);
                                                 System.out.println("> Listener: Request has been served at origin!");
 
                                                 requests.remove(r);
