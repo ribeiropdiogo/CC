@@ -1,16 +1,22 @@
+package Model;
+
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 public class Request {
+
     private long creationTime;
     private String origin_address;
     private String message;
     private List<String> response;
     private String status; // na -> não atendido / ad -> atendido no destino / sd -> servido no destino / to -> a ser transmitido à origem / so -> servido na origem / tbd -> to be deleted
 
+<<<<<<< HEAD:AnonGW/src/Request.java
     public Request(String address, String secretKey){
+=======
+    public Request(String address) {
+>>>>>>> 4cd0c915e1d28993aa03256af811f5630484d8f6:src/Model/Request.java
         this.creationTime = System.currentTimeMillis();
         this.origin_address = AES.encrypt(address, secretKey) ;;
         this.status = AES.encrypt("na", secretKey) ;;
@@ -64,10 +70,17 @@ public class Request {
                 Objects.equals(message, request.message);
     }
 
+<<<<<<< HEAD:AnonGW/src/Request.java
     public void printRequest(String secretKey){
         System.out.println("Request: ");
         System.out.println("Source: " + AES.decrypt(this.origin_address, secretKey));
         System.out.println("Message: " + AES.decrypt(this.message, secretKey));
+=======
+    public void printRequest() {
+        System.out.println("Model.Request: ");
+        System.out.println("Source: " + this.origin_address);
+        System.out.println("Message: " + this.message);
+>>>>>>> 4cd0c915e1d28993aa03256af811f5630484d8f6:src/Model/Request.java
         System.out.println("Creation Time: " + this.creationTime);
         System.out.println("Status: " + AES.decrypt(this.status, secretKey));
     }

@@ -1,10 +1,13 @@
+package Model;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Queue;
 import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
 
-public class NodeTCPListener implements Runnable{
+public class NodeTCPListener implements Runnable {
+
     private String target_address;
     private String source_address;
     private Socket socket;
@@ -20,7 +23,7 @@ public class NodeTCPListener implements Runnable{
         this.running = true;
     }
 
-    private boolean repeatedRequest(String sourceAddress, String request){
+    private boolean repeatedRequest(String sourceAddress, String request) {
         boolean r = false;
 
         if (this.requests.size() > 0){
@@ -62,9 +65,15 @@ public class NodeTCPListener implements Runnable{
                                     while (!r.getStatus(secretKey).equals("so")) {
                                         //System.out.println(r.getStatus());
                                         try {
+<<<<<<< HEAD:AnonGW/src/NodeTCPListener.java
                                             if (r.getStatus(secretKey).equals("sd")) {
                                                 System.out.println("> Listener: Request has been served at destination!");
                                                 r.setStatus("to",secretKey);
+=======
+                                            if (r.getStatus().equals("sd")) {
+                                                System.out.println("> Listener: Model.Request has been served at destination!");
+                                                r.setStatus("to");
+>>>>>>> 4cd0c915e1d28993aa03256af811f5630484d8f6:src/Model/NodeTCPListener.java
 
                                                 //Envia a resposta
                                                 Object[] rarray = r.getResponse(secretKey);
@@ -72,8 +81,13 @@ public class NodeTCPListener implements Runnable{
                                                     out.write(s.toString());
 
                                                 out.flush();
+<<<<<<< HEAD:AnonGW/src/NodeTCPListener.java
                                                 r.setStatus("so",secretKey);
                                                 System.out.println("> Listener: Request has been served at origin!");
+=======
+                                                r.setStatus("so");
+                                                System.out.println("> Listener: Model.Request has been served at origin!");
+>>>>>>> 4cd0c915e1d28993aa03256af811f5630484d8f6:src/Model/NodeTCPListener.java
 
                                                 requests.remove(r);
                                             }
@@ -81,7 +95,7 @@ public class NodeTCPListener implements Runnable{
                                             e.printStackTrace();
                                         }
                                     }
-                                    System.out.println("> Listener: Request has been removed from Queue!");
+                                    System.out.println("> Listener: Model.Request has been removed from Queue!");
                                     running = false;
                                 }
 

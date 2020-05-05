@@ -1,10 +1,13 @@
+package Model;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Queue;
 import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
 
-public class NodeTCPSpeaker implements Runnable{
+public class NodeTCPSpeaker implements Runnable {
+
     private Socket external_socket_out;
     private PrintWriter out;
     private BufferedReader in;
@@ -57,7 +60,7 @@ public class NodeTCPSpeaker implements Runnable{
                             r.concatenateResponse(t,secretKey);
                         r.setStatus("sd",secretKey);
 
-                        System.out.println("> Speaker: Request has been served at destination!");
+                        System.out.println("> Speaker: Model.Request has been served at destination!");
                         br.close();
 
                         //r.printRequest();
