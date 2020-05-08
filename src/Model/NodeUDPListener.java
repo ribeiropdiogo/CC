@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class NodeUDPListener{
+
     /*private DatagramSocket socket;
     private InetAddress address;
 
@@ -16,15 +17,13 @@ public class NodeUDPListener{
         address = InetAddress.getByName("localhost");
     }
 
-    public String sendEcho(String msg) throws IOException {
-        buf = msg.getBytes();
-        DatagramPacket packet
-                = new DatagramPacket(buf, buf.length, address, 4445);
+    public String sendEcho(Request r) throws IOException {
+        buf = r.getBytes();
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
         socket.send(packet);
         packet = new DatagramPacket(buf, buf.length);
         socket.receive(packet);
-        String received = new String(
-                packet.getData(), 0, packet.getLength());
+        String received = new String(packet.getData(), 0, packet.getLength());
         return received;
     }
 
