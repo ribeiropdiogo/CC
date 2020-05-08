@@ -131,6 +131,18 @@ public class Node {
         speaker.start();
     }
 
+    // Só funciona quando o TCPListener estiver ativado
+    // Esta função é usada para o nó comunicar com o segundo nó destino
+    public void startUDPSpeaker() {
+
+    }
+
+
+    // Esta função é usada para o nó ler a comunicação vinda do primeiro nó
+    public void startUDPListener() {
+
+    }
+
     // so para testes
     public void queuesize() {
         System.out.println("uelele: " + this.requests.size());

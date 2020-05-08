@@ -11,8 +11,16 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AES {
 
+    /**
+     * VARIÁVEIS DE INSTÂNCIA
+     */
+
     private static SecretKeySpec secretKey;
     private static byte[] key;
+
+    /**
+     * SETTER
+     */
 
     public static void setKey(String myKey)
     {
@@ -31,6 +39,10 @@ public class AES {
             e.printStackTrace();
         }
     }
+
+    /**
+     * MÉTODOS
+     */
 
     public static String encrypt(String strToEncrypt, String secret)
     {
