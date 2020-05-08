@@ -4,38 +4,23 @@ import Model.Node;
 
 public class AnonGW {
 
-    private static Node node1;
-    private static Node node2;
+    private static Node node;
 
     public static void main(String[] args) {
 	System.out.println("Coisas");
-        node1 = new Node();
-        node2 = new Node();
+        node = new Node();
         try {
-            node1.setupNode(args);
-            node1.printNodeInfo();
+            node.setupNode(args);
+            node.printNodeInfo();
             System.out.println("TCP Listener Start");
-            node1.startTCPListener();
+            node.startTCPListener();
             System.out.println("TCP Speaker Start");
-            node1.startTCPSpeaker();
+            node.startTCPSpeaker();
+            //System.out.println("UDP Listener Start");
+            //node.startUDPListener();
+            //System.out.println("UDP Speaker Start");
+            //node.startUDPSpeaker();
 
-
-            /**
-             *  O MÉTODO DE COMUNICAÇÃO SERÁ ALGUMA COISA DESTE GÉNERO
-             */
-
-            /*node1.setupNode(args);
-            node1.printNodeInfo();
-            node2.setupNode(args);
-            node2.printNodeInfo();
-            System.out.println("TCP Listener Start");
-            node1.startTCPListener();
-            System.out.println("UDP Speaker Start");
-            node2.startUDPListener();
-            System.out.println("UDP Listener Start");
-            node2.startUDPListener();
-            System.out.println("TCP Speaker Start");
-            node2.startTCPSpeaker();*/
 
             /*
             while (true){
