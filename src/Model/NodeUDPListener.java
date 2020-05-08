@@ -1,24 +1,30 @@
 package Model;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.net.*;
 
-public class NodeUDPListener{
+public class NodeUDPListener {
 
-    /*private DatagramSocket socket;
+    private DatagramSocket socket;
     private InetAddress address;
 
     private byte[] buf;
 
     public NodeUDPListener() {
-        socket = new DatagramSocket();
-        address = InetAddress.getByName("localhost");
+        try {
+            socket = new DatagramSocket();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        try {
+            address = InetAddress.getByName("localhost");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     public String sendEcho(Request r) throws IOException {
-        buf = r.getBytes();
+        // buf = r.getBytes();
         DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
         socket.send(packet);
         packet = new DatagramPacket(buf, buf.length);
@@ -29,5 +35,5 @@ public class NodeUDPListener{
 
     public void close() {
         socket.close();
-    }*/
+    }
 }
