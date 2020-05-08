@@ -1,18 +1,33 @@
 package Model;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.SortedSet;
 
 public class NodeUDPSpeaker implements Runnable{
+
+    private PrintWriter out;
+    private BufferedReader in;
+    private int outside_port;
+    private SortedSet<Request> requests;
+    private String target_address;
+    private int contador = 0;
+
+    final String secretKey = "HelpMeObiWanKenobi!";
 
     private DatagramSocket socket;
     private boolean running;
     private byte[] buf = new byte[256];
 
-    public NodeUDPSpeaker() {
+    public NodeUDPSpeaker(int s, SortedSet<Request> r, String target) {
+        this.outside_port = s;
+        this.requests = r;
+        this.target_address = target;
         try {
             socket = new DatagramSocket(4445);
         } catch (SocketException e) {

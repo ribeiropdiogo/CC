@@ -20,8 +20,6 @@ public class AnonGW {
             node.startUDPListener();
             System.out.println("UDP Speaker Start");
             node.startUDPSpeaker();
-
-
             /*
             while (true){
                 TimeUnit.SECONDS.sleep(5);
