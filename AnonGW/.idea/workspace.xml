@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b917fb4c-219b-49f0-bd24-a563373abc95" name="Default Changelist" comment="" />
+    <list default="true" id="b917fb4c-219b-49f0-bd24-a563373abc95" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/AnonGW.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Exceptions/InsufficientParametersException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Model/AES.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Model/AnonPacket.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Model/Node.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Model/NodeTCPListener.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Model/NodeTCPSpeaker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Model/Request.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Model/RequestComparator.java" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -42,7 +54,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="project.structure.last.edited" value="Facets" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
@@ -95,6 +107,7 @@
       <workItem from="1588354800656" duration="9000" />
       <workItem from="1588667644449" duration="3176000" />
       <workItem from="1588673137237" duration="94000" />
+      <workItem from="1588949281011" duration="479000" />
     </task>
     <task id="LOCAL-00001" summary="Inicialização da estrutura de um nodo">
       <created>1584122636717</created>
@@ -140,6 +153,10 @@
       <screen x="0" y="23" width="1280" height="777" />
     </state>
     <state x="240" y="77" key="#Notifications/0.23.1280.777@0.23.1280.777" timestamp="1588673225593" />
+    <state x="240" y="77" key="#Project_Structure" timestamp="1588949634947">
+      <screen x="0" y="23" width="1280" height="777" />
+    </state>
+    <state x="240" y="77" key="#Project_Structure/0.23.1280.777@0.23.1280.777" timestamp="1588949634947" />
     <state x="164" y="111" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1588671222756">
       <screen x="0" y="23" width="1280" height="777" />
     </state>
@@ -152,6 +169,10 @@
     <state x="474" y="147" key="#com.intellij.ide.util.MemberChooser/0.0.1280.800@0.0.1280.800" timestamp="1584141774742" />
     <state x="533" y="165" key="#com.intellij.ide.util.MemberChooser/1440.0.1280.1024/0.0.1440.900@0.0.1440.900" timestamp="1584201973534" />
     <state x="533" y="184" key="#com.intellij.ide.util.MemberChooser/1440.23.1280.1001/0.23.1440.877@0.23.1440.877" timestamp="1584116956329" />
+    <state x="489" y="307" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog" timestamp="1588949587595">
+      <screen x="0" y="23" width="1280" height="777" />
+    </state>
+    <state x="489" y="307" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/0.23.1280.777@0.23.1280.777" timestamp="1588949587595" />
     <state x="269" y="23" width="833" height="777" key="CommitChangelistDialog2" timestamp="1588672792652">
       <screen x="0" y="23" width="1280" height="777" />
     </state>
@@ -177,11 +198,11 @@
     </state>
     <state width="1398" height="230" key="GridCell.Tab.0.right/1440.0.1280.1024/0.0.1440.900@0.0.1440.900" timestamp="1584123433831" />
     <state width="1398" height="230" key="GridCell.Tab.0.right/1440.23.1280.1001/0.23.1440.877@0.23.1440.877" timestamp="1584116831547" />
-    <state x="141" y="23" key="SettingsEditor" timestamp="1588671269337">
+    <state x="141" y="23" key="SettingsEditor" timestamp="1588949851265">
       <screen x="0" y="23" width="1280" height="777" />
     </state>
     <state x="141" y="39" key="SettingsEditor/0.0.1280.800@0.0.1280.800" timestamp="1584135838105" />
-    <state x="141" y="23" key="SettingsEditor/0.23.1280.777@0.23.1280.777" timestamp="1588671269337" />
+    <state x="141" y="23" key="SettingsEditor/0.23.1280.777@0.23.1280.777" timestamp="1588949851265" />
     <state x="394" y="134" key="VCS.ChangeListViewerDialog" timestamp="1588673201694">
       <screen x="0" y="23" width="1280" height="777" />
     </state>
@@ -191,17 +212,17 @@
     </state>
     <state x="284" y="187" key="Vcs.Push.Dialog.v2/0.23.1280.777@0.23.1280.777" timestamp="1588672794866" />
     <state x="320" y="190" key="Vcs.Push.Dialog.v2/1440.0.1280.1024/0.0.1440.900@0.0.1440.900" timestamp="1584204275217" />
-    <state x="353" y="252" key="com.intellij.ide.util.TipDialog" timestamp="1588673169784">
+    <state x="353" y="252" key="com.intellij.ide.util.TipDialog" timestamp="1588949282516">
       <screen x="0" y="23" width="1280" height="777" />
     </state>
     <state x="353" y="236" key="com.intellij.ide.util.TipDialog/0.0.1280.800@0.0.1280.800" timestamp="1585166670975" />
-    <state x="353" y="252" key="com.intellij.ide.util.TipDialog/0.23.1280.777@0.23.1280.777" timestamp="1588673169784" />
+    <state x="353" y="252" key="com.intellij.ide.util.TipDialog/0.23.1280.777@0.23.1280.777" timestamp="1588949282516" />
     <state x="353" y="236" key="com.intellij.ide.util.TipDialog/1280.0.1280.1024/0.0.1280.800@0.0.1280.800" timestamp="1584438596895" />
     <state x="397" y="282" key="com.intellij.ide.util.TipDialog/1440.23.1280.1001/0.23.1440.877@0.23.1440.877" timestamp="1584127684320" />
-    <state x="423" y="335" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1588673195514">
+    <state x="423" y="335" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1588949327466">
       <screen x="0" y="23" width="1280" height="777" />
     </state>
-    <state x="423" y="335" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1280.777@0.23.1280.777" timestamp="1588673195514" />
+    <state x="423" y="335" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1280.777@0.23.1280.777" timestamp="1588949327466" />
     <state x="17" y="34" key="new project wizard" timestamp="1587075399129">
       <screen x="0" y="23" width="1280" height="777" />
     </state>
