@@ -7,7 +7,7 @@ public class AnonGW {
     private static Node node;
 
     public static void main(String[] args) {
-	System.out.println("Coisas");
+	System.out.println("> AnonGW started");
         node = new Node();
         try {
             node.setupNode(args);
