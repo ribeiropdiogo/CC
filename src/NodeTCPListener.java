@@ -34,7 +34,7 @@ public class NodeTCPListener implements Runnable {
 
     private String getPeer(){
         int i = random(0,peers.size());
-        String ps[] = (String[]) this.peers.toArray();
+        String[] ps = peers.toArray(new String[peers.size()]);
         return ps[i];
     }
 
