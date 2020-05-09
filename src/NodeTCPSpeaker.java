@@ -57,7 +57,7 @@ public class NodeTCPSpeaker implements Runnable {
                             r.concatenateResponse(t,secretKey);
                         r.setStatus("sd",secretKey);
 
-                        System.out.println("> Speaker: Model.Request has been served at destination!");
+                        System.out.println("> Speaker: Request has been served at destination!");
                         br.close();
 
                         //r.printRequest();

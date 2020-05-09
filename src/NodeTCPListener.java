@@ -1,5 +1,8 @@
 import java.io.*;
+import java.net.DatagramSocket;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Set;
 import java.util.SortedSet;
 
 public class NodeTCPListener implements Runnable {
@@ -7,16 +10,32 @@ public class NodeTCPListener implements Runnable {
     private String target_address;
     private String source_address;
     private Socket socket;
+    private DatagramSocket UDPsocket;
     private SortedSet<Request> requests;
     private Boolean running;
+    private Set<String> peers;
+    private int protected_port;
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
-    public NodeTCPListener(Socket s, SortedSet<Request> r, String address) {
+    public NodeTCPListener(Socket s, SortedSet<Request> r, String address, DatagramSocket usocket, Set<String> p, int port) {
         this.socket = s;
         this.requests = r;
         this.target_address = address;
         this.running = true;
+        this.UDPsocket = usocket;
+        this.peers = p;
+        this.protected_port = port;
+    }
+
+    private int random(int lower, int upper){
+        return  (int) (Math.random() * (upper - lower)) + lower;
+    }
+
+    private String getPeer(){
+        int i = random(0,peers.size());
+        String ps[] = (String[]) this.peers.toArray();
+        return ps[i];
     }
 
     private boolean repeatedRequest(String sourceAddress, String request) {
@@ -31,24 +50,45 @@ public class NodeTCPListener implements Runnable {
         return r;
     }
 
+    public void startRequestHandler(DatagramSocket s,Request r, int port) throws IOException {
+
+        Thread handler = new Thread(){
+            public void run(){
+                while (true) {
+                    Socket socket = null;
+                    try {
+                        RequestHandler rh = new RequestHandler(s,r,getPeer(),port);
+                        new Thread(rh).start();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        handler.start();
+    }
+
     public void run() {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(socket.getOutputStream()), "UTF-8"));
 
             final String data = in.readLine();
-            System.out.println("> Listener: Established new connection with outside");
+            System.out.println("> TCPListener: Established new connection with outside");
                 if (!socket.getRemoteSocketAddress().toString().equals(target_address)) {
                     final Request r = new Request(socket.getRemoteSocketAddress().toString().substring(1),secretKey);
                     r.setMessage(data,secretKey);
 
                     //r.printRequest();
 
-                    if (!repeatedRequest(socket.getRemoteSocketAddress().toString().substring(1), data)) {
-                        this.requests.add(r);
+                    System.out.println("> TCPListener: Created the new Request");
+                    //if (!repeatedRequest(socket.getRemoteSocketAddress().toString().substring(1), data)) {
+                        //this.requests.add(r);
                         out.write("");
-                        System.out.println("> Listener: Added new request");
-                        System.out.println("> Listener: Queue size is " + requests.size());
+
+                        startRequestHandler(this.UDPsocket,r,this.protected_port);
+                        System.out.println("> TCPListener: Sent the new Request");
+                        //System.out.println("> Listener: Queue size is " + requests.size());
 
 
                                 while (running) {
@@ -86,7 +126,7 @@ public class NodeTCPListener implements Runnable {
                                 }
 
 
-                    }
+                    //}
 
 
 

@@ -13,7 +13,7 @@ public class Node {
     private int protected_port = 6666;
     private ServerSocket external_socket_in;
     private Socket external_socket_out;
-    private DatagramSocket internal_socket_out, internal_socket_in;
+    private DatagramSocket internal_socket;
     private SortedSet<Request> requests;
 
     /* CONSTRUTORES */
@@ -31,8 +31,7 @@ public class Node {
         requests = new TreeSet(comparator);
 
         try {
-            internal_socket_in = new DatagramSocket();
-            internal_socket_out = new DatagramSocket();
+            internal_socket = new DatagramSocket(protected_port);
         } catch (SocketException e) {
             e.printStackTrace();
         }
@@ -99,7 +98,7 @@ public class Node {
                     Socket socket = null;
                     try {
                         socket = external_socket_in.accept();
-                        NodeTCPListener nl = new NodeTCPListener(socket, requests, target_address);
+                        NodeTCPListener nl = new NodeTCPListener(socket, requests, target_address, internal_socket, peers,protected_port);
                         new Thread(nl).start();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -129,6 +128,7 @@ public class Node {
         speaker.start();
     }
 
+    /*
     // Só funciona quando o TCPListener estiver ativado
     // Esta função é usada para o nó comunicar com o segundo nó destino
     public void startUDPSpeaker() throws IOException {
@@ -144,14 +144,14 @@ public class Node {
         };
         uspeaker.start();
     }
-
+    */
 
     // Esta função é usada para o nó ler a comunicação vinda do primeiro nó
     public void startUDPListener() throws IOException{
         Thread ulistener = new Thread(){
             public void run(){
                 try {
-                    NodeUDPListener nul = new NodeUDPListener(my_address);
+                    NodeUDPListener nul = new NodeUDPListener(internal_socket,requests);
                     new Thread(nul).start();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -161,6 +161,7 @@ public class Node {
         };
         ulistener.start();
     }
+
 
     // so para testes
     public void queuesize() {

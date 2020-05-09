@@ -67,6 +67,7 @@ public class Request {
     public void printRequest(String secretKey){
         System.out.println("Request: ");
         System.out.println("Source: " + AES.decrypt(this.origin_address, secretKey));
+        System.out.println("Source: " + this.origin_address);
         System.out.println("Message: " + AES.decrypt(this.message, secretKey));
         System.out.println("Creation Time: " + this.creationTime);
         System.out.println("Status: " + AES.decrypt(this.status, secretKey));

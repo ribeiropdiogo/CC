@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -10,27 +11,51 @@ public class NodeUDPListener implements Runnable{
     private SortedSet<Request> requests;
     private Set<String> peers;
     private DatagramSocket socket;
-    private boolean running;
-    private byte[] buf = new byte[256];
+    private volatile boolean running = true;
+    private byte[] buffer = new byte[20*1024];
+    private byte[] requestBuffer = new byte[20*1024];
     private InetAddress address;
-    private int port;
 
-    public NodeUDPListener(String my_address) {
+    public NodeUDPListener(DatagramSocket socket, SortedSet<Request> r) {
         try {
-            try {
-                socket = new DatagramSocket(4445,InetAddress.getByName(my_address));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-        } catch (SocketException e) {
+            this.socket = socket;
+            this.requests = r;
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void run() {
-        running = true;
+    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = new ObjectInputStream(in);
+        return is.readObject();
+    }
 
+    public void run() {
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         while (running) {
+            System.out.println("> Laucnhed UDPListener");
+            try {
+                // receber pacotes udp
+                System.out.println("> UDPListener: Receiving packet");
+                socket.receive(packet);
+                requestBuffer = packet.getData();
+
+
+                System.out.println("> UDPListener: packet received");
+                // colocar esses pacotes udp na fila de espera
+                Request r = (Request)deserialize(requestBuffer);
+                Arrays.fill(requestBuffer, (byte)0);
+                System.out.println("> UDPListener: Converting packet to Request");
+                requests.add(r);
+                System.out.println("> UDPListener: Request added to queue");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+
+            /*
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
             try {
                 socket.receive(packet);
@@ -66,7 +91,7 @@ public class NodeUDPListener implements Runnable{
                     // ignore close exception
                 }
             }
+            */
         }
-        socket.close();
     }
 }
