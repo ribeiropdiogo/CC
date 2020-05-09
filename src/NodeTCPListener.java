@@ -96,6 +96,7 @@ public class NodeTCPListener implements Runnable {
                                     while (!fisrtrequest.getStatus(secretKey).equals("so")) {
                                         //System.out.println(r.getStatus());
                                         try {
+                                            /*
                                             if (fisrtrequest.getStatus(secretKey).equals("sd")) {
                                                 System.out.println("> TCPListener: Request has been served at destination!");
                                                 fisrtrequest.setStatus("to",secretKey);
@@ -111,13 +112,15 @@ public class NodeTCPListener implements Runnable {
                                                 System.out.println("> TCPListener: Request has been served at origin!");
 
                                                 requests.remove(fisrtrequest);
-                                            }
+
+                                             */
+
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
 
 
-                                    }*/
+                                    }
                                     System.out.println("> Listener: Model.Request has been removed from Queue!");
                                     running = false;
                                 }
