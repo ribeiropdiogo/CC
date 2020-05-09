@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
@@ -11,16 +12,36 @@ public class NodeTCPSpeaker implements Runnable {
     private int outside_port;
     private SortedSet<Request> requests;
     private String target_address;
+    private int protected_port;
     private volatile boolean running = true;
     private int contador = 0;
+    private DatagramSocket UDPsocket;
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
 
-    public NodeTCPSpeaker(int s, SortedSet<Request> r, String target) {
+    public NodeTCPSpeaker(int s, SortedSet<Request> r, String target, int port, DatagramSocket socket) {
         this.outside_port = s;
         this.requests = r;
         this.target_address = target;
+        this.protected_port = port;
+        this.UDPsocket = socket;
+    }
+
+    public void startRequestHandler(DatagramSocket s, Request r) throws IOException {
+
+        Thread handler = new Thread(){
+            public void run(){
+                Socket socket = null;
+                try {
+                    RequestHandler rh = new RequestHandler(s,r,r.getContactNodeAddress(secretKey),protected_port);
+                    new Thread(rh).start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        handler.start();
     }
 
 
@@ -62,6 +83,13 @@ public class NodeTCPSpeaker implements Runnable {
 
                         //r.printRequest();
                         external_socket_out.close();
+
+
+                        //enviar o request via udp de volta
+                        startRequestHandler(this.UDPsocket,r);
+
+                        //remover o request da fila de espera deste nodo
+                        requests.remove(r);
                     }
                 }
 

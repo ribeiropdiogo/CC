@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -72,7 +73,7 @@ public class NodeTCPListener implements Runnable {
             final String data = in.readLine();
             System.out.println("> TCPListener: Established new connection with outside");
                 if (!socket.getRemoteSocketAddress().toString().equals(target_address)) {
-                    final Request r = new Request(socket.getRemoteSocketAddress().toString().substring(1),secretKey);
+                    final Request r = new Request(InetAddress.getLocalHost().getHostAddress(),socket.getRemoteSocketAddress().toString().substring(1),secretKey);
                     r.setMessage(data,secretKey);
 
                     //r.printRequest();

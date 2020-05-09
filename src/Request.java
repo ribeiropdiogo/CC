@@ -7,19 +7,29 @@ public class Request implements Serializable {
 
     private long creationTime;
     private String origin_address;
+    private String contact_node_address;
     private String message;
     private List<String> response;
     private String status; // na -> não atendido / ad -> atendido no destino / sd -> servido no destino / to -> a ser transmitido à origem / so -> servido na origem / tbd -> to be deleted
 
-    public Request(String address, String secretKey){
+    public Request(String address, String node_address, String secretKey){
         this.creationTime = System.currentTimeMillis();
         this.origin_address = AES.encrypt(address, secretKey) ;;
         this.status = AES.encrypt("na", secretKey) ;;
         this.response = new ArrayList();
+        this.contact_node_address = node_address;
     }
 
     public String getOrigin_address(String secretKey) {
-        return AES.decrypt(origin_address, secretKey);
+        return AES.decrypt(this.origin_address, secretKey);
+    }
+
+    public String getContactNodeAddress(String secretKey) {
+        return AES.decrypt(this.contact_node_address, secretKey);
+    }
+
+    public void setContactNodeAddress(String address, String secretKey) {
+        this.contact_node_address = AES.encrypt(address, secretKey);
     }
 
     public String getMessage(String secretKey) {
