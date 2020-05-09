@@ -77,7 +77,6 @@ public class NodeTCPListener implements Runnable {
                     final Request r = new Request(this.node_address,socket.getRemoteSocketAddress().toString().substring(1),secretKey);
                     r.setMessage(data,secretKey);
                     r.setContactNodeAddress(this.node_address,secretKey);
-                    r.getStatus(secretKey);
                     //r.printRequest();
 
                     System.out.println("> TCPListener: Created the new Request");
@@ -91,6 +90,7 @@ public class NodeTCPListener implements Runnable {
 
 
                                 while (running) {
+                                    System.out.println("> aaaa");
                                     if (requests.size() > 0) {
                                         Request fisrtrequest = requests.first();
                                         System.out.println("> status: "+fisrtrequest.getStatus(secretKey));
