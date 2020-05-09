@@ -37,7 +37,7 @@ public class RequestHandler implements Runnable{
                 address = InetAddress.getByName(peer);
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, this.protected_port);
                 internal_socket.send(packet);
-                System.out.println("> RequestHandler: Sent Request to peer");
+                System.out.println("> RequestHandler: Sent Request to peer "+address);
                 running = false;
             } catch (Exception e) {
                 e.printStackTrace();
