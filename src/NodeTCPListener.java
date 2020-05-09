@@ -7,7 +7,7 @@ import java.util.*;
 
 public class NodeTCPListener implements Runnable {
 
-    private String target_address;
+    private String target_address, node_address;
     private String source_address;
     private Socket socket;
     private DatagramSocket UDPsocket;
@@ -19,10 +19,11 @@ public class NodeTCPListener implements Runnable {
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
-    public NodeTCPListener(Socket s, SortedSet<Request> r, String address, DatagramSocket usocket, Set<String> p, int port) {
+    public NodeTCPListener(Socket s, SortedSet<Request> r, String address, String naddress, DatagramSocket usocket, Set<String> p, int port) {
         this.socket = s;
         this.requests = r;
         this.target_address = address;
+        this.node_address = naddress;
         this.running = true;
         this.UDPsocket = usocket;
         this.peers = p;
@@ -73,7 +74,7 @@ public class NodeTCPListener implements Runnable {
             final String data = in.readLine();
             System.out.println("> TCPListener: Established new connection with outside");
                 if (!socket.getRemoteSocketAddress().toString().equals(target_address)) {
-                    final Request r = new Request(InetAddress.getLocalHost().getHostAddress(),socket.getRemoteSocketAddress().toString().substring(1),secretKey);
+                    final Request r = new Request(this.node_address,socket.getRemoteSocketAddress().toString().substring(1),secretKey);
                     r.setMessage(data,secretKey);
 
                     //r.printRequest();

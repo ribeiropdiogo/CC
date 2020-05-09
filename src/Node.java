@@ -98,7 +98,7 @@ public class Node {
                     Socket socket = null;
                     try {
                         socket = external_socket_in.accept();
-                        NodeTCPListener nl = new NodeTCPListener(socket, requests, target_address, internal_socket, peers,protected_port);
+                        NodeTCPListener nl = new NodeTCPListener(socket, requests, target_address, my_address, internal_socket, peers,protected_port);
                         new Thread(nl).start();
                     } catch (Exception e) {
                         e.printStackTrace();
