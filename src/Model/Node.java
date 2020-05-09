@@ -133,17 +133,16 @@ public class Node {
 
     // Só funciona quando o TCPListener estiver ativado
     // Esta função é usada para o nó comunicar com o segundo nó destino
-    public void startUDPSpeaker() throws IOException{
-        Thread uspeaker = new Thread(){
-            public void run(){
+    public void startUDPSpeaker() throws IOException {
+        Thread uspeaker = new Thread() {
+            public void run() {
                 try {
-                    NodeUDPSpeaker nus = new NodeUDPSpeaker(requests,peers);
+                    NodeUDPSpeaker nus = new NodeUDPSpeaker(requests, peers);
                     new Thread(nus).start();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-
         };
         uspeaker.start();
     }
