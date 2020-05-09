@@ -76,6 +76,7 @@ public class NodeTCPListener implements Runnable {
             System.out.println("> TCPListener: Established new connection with outside");
                 if (!socket.getRemoteSocketAddress().toString().equals(target_address)) {
                     final Request r = new Request(this.node_address,socket.getRemoteSocketAddress().toString().substring(1),secretKey);
+                    String clientaddress = socket.getRemoteSocketAddress().toString().substring(1);
                     r.setMessage(data,secretKey);
                     r.setContactNodeAddress(this.node_address,secretKey);
                     //r.printRequest();
@@ -97,26 +98,32 @@ public class NodeTCPListener implements Runnable {
                                         e.printStackTrace();
                                     }
                                     if (requests.size() > 0) {
-                                        Request fisrtrequest = requests.first();
+                                        Request requesttoserve = new Request("error","error",secretKey);
+                                        for (Iterator<Request> it = requests.iterator(); it.hasNext(); ) {
+                                            Request f = it.next();
+                                            if (f.getOrigin_address(secretKey).equals(clientaddress))
+                                                requesttoserve = f;
+                                        }
+
                                         //System.out.println("> status: "+fisrtrequest.getStatus(secretKey));
-                                        while (!fisrtrequest.getStatus(secretKey).equals("so")) {
+                                        while (!requesttoserve.getStatus(secretKey).equals("so")) {
                                             try {
 
-                                            if (fisrtrequest.getStatus(secretKey).equals("sd")) {
+                                            if (requesttoserve.getStatus(secretKey).equals("sd")) {
                                                 System.out.println("> TCPListener: Request has been served at destination!");
-                                                fisrtrequest.setStatus("to", secretKey);
+                                                requesttoserve.setStatus("to", secretKey);
 
                                                 //Envia a resposta
-                                                Object[] rarray = fisrtrequest.getResponse(secretKey);
+                                                Object[] rarray = requesttoserve.getResponse(secretKey);
                                                 for (Object s : rarray)
                                                     out.write(s.toString());
 
                                                 out.flush();
 
-                                                fisrtrequest.setStatus("so",secretKey);
+                                                requesttoserve.setStatus("so",secretKey);
                                                 System.out.println("> TCPListener: Request has been served at origin!");
 
-                                                requests.remove(fisrtrequest);
+                                                requests.remove(requesttoserve);
 
 
                                             }
@@ -126,23 +133,18 @@ public class NodeTCPListener implements Runnable {
 
 
                                         }
-                                        System.out.println("> TCPListener: Model.Request has been removed from Queue!");
+                                        System.out.println("> TCPListener: Request has been removed from Queue!");
                                         running = false;
                                     }
                                 }
-
-
                     }
-
-
-
             }
 
 
 
             socket.close();
             out.flush();
-            System.out.println("> Listener: I'm dead inside :(");
+            System.out.println("> TCPListener: Job Ended");
         } catch (Exception e) {
             e.printStackTrace();
         }

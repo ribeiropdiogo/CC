@@ -62,7 +62,7 @@ public class NodeTCPSpeaker implements Runnable {
                         System.out.println("> Speaker: Found request!");
 
 
-                        System.out.println("> Speaker: Sent request to server");
+                        System.out.println("> TCPSpeaker: Sent request to server");
                         // Envia o pedido ao servidor de destino
                         PrintWriter pw = new PrintWriter(external_socket_out.getOutputStream());
                         pw.println(r.getMessage(secretKey));
@@ -70,7 +70,7 @@ public class NodeTCPSpeaker implements Runnable {
                         pw.flush();
 
 
-                        System.out.println("> Speaker: Getting response from server");
+                        System.out.println("> TCPSpeaker: Getting response from server");
                         // Recebe a resposta do servidor de destino
                         BufferedReader br = new BufferedReader(new InputStreamReader(external_socket_out.getInputStream()));
                         String t;
@@ -78,7 +78,7 @@ public class NodeTCPSpeaker implements Runnable {
                             r.concatenateResponse(t,secretKey);
                         r.setStatus("sd",secretKey);
 
-                        System.out.println("> Speaker: Request has been served at destination!");
+                        System.out.println("> TCPSpeaker: Request has been served at destination!");
                         br.close();
 
                         //r.printRequest();
