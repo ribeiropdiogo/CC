@@ -77,7 +77,7 @@ public class NodeTCPListener implements Runnable {
                     final Request r = new Request(this.node_address,socket.getRemoteSocketAddress().toString().substring(1),secretKey);
                     r.setMessage(data,secretKey);
                     r.setContactNodeAddress(this.node_address,secretKey);
-
+                    r.getStatus(secretKey);
                     //r.printRequest();
 
                     System.out.println("> TCPListener: Created the new Request");
@@ -91,35 +91,33 @@ public class NodeTCPListener implements Runnable {
 
 
                                 while (running) {
-                                    /*
-                                    try {
-                                        TimeUnit.SECONDS.sleep(5);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }*/
-                                    while (!r.getStatus(secretKey).equals("so")) {
+                                    Request fisrtrequest = requests.first();
+
+                                    while (!fisrtrequest.getStatus(secretKey).equals("so")) {
                                         //System.out.println(r.getStatus());
                                         try {
-                                            if (r.getStatus(secretKey).equals("sd")) {
-                                                System.out.println("> Listener: Request has been served at destination!");
-                                                r.setStatus("to",secretKey);
+                                            if (fisrtrequest.getStatus(secretKey).equals("sd")) {
+                                                System.out.println("> TCPListener: Request has been served at destination!");
+                                                fisrtrequest.setStatus("to",secretKey);
 
                                                 //Envia a resposta
-                                                Object[] rarray = r.getResponse(secretKey);
+                                                Object[] rarray = fisrtrequest.getResponse(secretKey);
                                                 for (Object s : rarray)
                                                     out.write(s.toString());
 
                                                 out.flush();
 
-                                                r.setStatus("so",secretKey);
-                                                System.out.println("> Listener: Request has been served at origin!");
+                                                fisrtrequest.setStatus("so",secretKey);
+                                                System.out.println("> TCPListener: Request has been served at origin!");
 
-                                                requests.remove(r);
+                                                requests.remove(fisrtrequest);
                                             }
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
-                                    }
+
+
+                                    }*/
                                     System.out.println("> Listener: Model.Request has been removed from Queue!");
                                     running = false;
                                 }
