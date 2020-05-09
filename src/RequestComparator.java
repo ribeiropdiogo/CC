@@ -1,7 +1,3 @@
-package Model;
-
-import Model.Request;
-
 import java.util.Comparator;
 
 public class RequestComparator implements Comparator<Request> {
