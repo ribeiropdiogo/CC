@@ -36,8 +36,8 @@ public class NodeUDPListener implements Runnable{
         while (running) {
             try {
                 // receber pacotes udp
-                System.out.println("> UDPListener: Receiving packet");
                 socket.receive(packet);
+                System.out.println("> UDPListener: Receiving packet");
                 requestBuffer = packet.getData();
 
 
