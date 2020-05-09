@@ -93,9 +93,8 @@ public class NodeTCPListener implements Runnable {
                                 while (running) {
                                     if (requests.size() > 0) {
                                         Request fisrtrequest = requests.first();
-
+                                        System.out.println("> status: "+fisrtrequest.getStatus(secretKey));
                                         while (!fisrtrequest.getStatus(secretKey).equals("so")) {
-                                            System.out.println("> ssssssssss");
                                             try {
 
                                             if (fisrtrequest.getStatus(secretKey).equals("sd")) {
