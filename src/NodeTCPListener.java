@@ -42,10 +42,8 @@ public class NodeTCPListener implements Runnable {
     private boolean repeatedRequest(String sourceAddress) {
         boolean r = false;
 
-        if (this.requests.size() > 0){
-            if (waitinglist.contains(sourceAddress))
-                    r = true;
-        }
+        if (waitinglist.contains(sourceAddress))
+            r = true;
 
         return r;
     }
@@ -54,7 +52,6 @@ public class NodeTCPListener implements Runnable {
 
         Thread handler = new Thread(){
             public void run(){
-                while (true) {
                     Socket socket = null;
                     try {
                         RequestHandler rh = new RequestHandler(s,r,getPeer(),port);
@@ -62,7 +59,6 @@ public class NodeTCPListener implements Runnable {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }
             }
         };
         handler.start();
@@ -83,9 +79,9 @@ public class NodeTCPListener implements Runnable {
 
                     System.out.println("> TCPListener: Created the new Request");
                     if (!repeatedRequest(socket.getRemoteSocketAddress().toString().substring(1))) {
+                        this.waitinglist.add(socket.getRemoteSocketAddress().toString().substring(1));
                         //this.requests.add(r);
                         out.write("");
-                        this.waitinglist.add(socket.getRemoteSocketAddress().toString().substring(1));
                         startRequestHandler(this.UDPsocket,r,this.protected_port);
                         System.out.println("> TCPListener: Sent the new Request");
                         //System.out.println("> Listener: Queue size is " + requests.size());
