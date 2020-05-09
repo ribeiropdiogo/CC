@@ -95,7 +95,7 @@ public class NodeTCPListener implements Runnable {
                                         Request fisrtrequest = requests.first();
 
                                         while (!fisrtrequest.getStatus(secretKey).equals("so")) {
-                                            //System.out.println(r.getStatus());
+                                            System.out.println("> ssssssssss");
                                             try {
 
                                             if (fisrtrequest.getStatus(secretKey).equals("sd")) {
