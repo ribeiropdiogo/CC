@@ -34,7 +34,6 @@ public class NodeUDPListener implements Runnable{
     public void run() {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         while (running) {
-            System.out.println("> Laucnhed UDPListener");
             try {
                 // receber pacotes udp
                 System.out.println("> UDPListener: Receiving packet");

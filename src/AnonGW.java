@@ -12,8 +12,9 @@ public class AnonGW {
             node.startTCPListener();
             System.out.println("> Launched TCPSpeaker");
             node.startTCPSpeaker();
-            /*System.out.println("UDP Listener Start");
+            System.out.println("> Launched UDPListener");
             node.startUDPListener();
+            /*
             System.out.println("UDP Speaker Start");
             node.startUDPSpeaker();
             /*
