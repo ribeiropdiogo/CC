@@ -98,7 +98,7 @@ public class NodeTCPListener implements Runnable {
                                         e.printStackTrace();
                                     }
                                     if (requests.size() > 0) {
-                                        Request requesttoserve = new Request("error","error",secretKey);
+                                        Request requesttoserve = requests.first();
                                         for (Iterator<Request> it = requests.iterator(); it.hasNext(); ) {
                                             Request f = it.next();
                                             if (f.getOrigin_address(secretKey).equals(clientaddress))
