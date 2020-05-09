@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -14,6 +15,7 @@ public class NodeTCPListener implements Runnable {
     private SortedSet<Request> requests;
     private Boolean running;
     private Set<String> peers;
+    private Set<String> waitinglist;
     private int protected_port;
 
     final String secretKey = "HelpMeObiWanKenobi!";
@@ -26,6 +28,7 @@ public class NodeTCPListener implements Runnable {
         this.UDPsocket = usocket;
         this.peers = p;
         this.protected_port = port;
+        this.waitinglist =  new HashSet<>();
     }
 
     private int random(int lower, int upper){
@@ -38,12 +41,11 @@ public class NodeTCPListener implements Runnable {
         return ps[i];
     }
 
-    private boolean repeatedRequest(String sourceAddress, String request) {
+    private boolean repeatedRequest(String sourceAddress) {
         boolean r = false;
 
         if (this.requests.size() > 0){
-            for (Request req : this.requests)
-                if (req.getOrigin_address(secretKey).equals(sourceAddress))
+            if (waitinglist.contains(sourceAddress))
                     r = true;
         }
 
@@ -82,10 +84,10 @@ public class NodeTCPListener implements Runnable {
                     //r.printRequest();
 
                     System.out.println("> TCPListener: Created the new Request");
-                    //if (!repeatedRequest(socket.getRemoteSocketAddress().toString().substring(1), data)) {
+                    if (!repeatedRequest(socket.getRemoteSocketAddress().toString().substring(1))) {
                         //this.requests.add(r);
                         out.write("");
-
+                        this.waitinglist.add(socket.getRemoteSocketAddress().toString().substring(1));
                         startRequestHandler(this.UDPsocket,r,this.protected_port);
                         System.out.println("> TCPListener: Sent the new Request");
                         //System.out.println("> Listener: Queue size is " + requests.size());
@@ -126,7 +128,7 @@ public class NodeTCPListener implements Runnable {
                                 }
 
 
-                    //}
+                    }
 
 
 

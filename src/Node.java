@@ -79,9 +79,9 @@ public class Node {
     }
 
     public void printNodeInfo() {
-        System.out.println("Model.Node info:");
-        System.out.println("Model.Node Address: " + my_address);
-        System.out.print("Model.Node peers: ");
+        System.out.println("Node info:");
+        System.out.println("Node Address: " + my_address);
+        System.out.print("Node peers: ");
         System.out.println(Arrays.toString(peers.toArray()));
         System.out.println("Target Address: " + target_address);
         System.out.println("Outside Port: " + outside_port);
