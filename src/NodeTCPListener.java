@@ -91,16 +91,17 @@ public class NodeTCPListener implements Runnable {
 
 
                                 while (running) {
-                                    Request fisrtrequest = requests.first();
+                                    if (requests.size() > 0) {
+                                        Request fisrtrequest = requests.first();
 
-                                    while (!fisrtrequest.getStatus(secretKey).equals("so")) {
-                                        //System.out.println(r.getStatus());
-                                        try {
-                                            /*
+                                        while (!fisrtrequest.getStatus(secretKey).equals("so")) {
+                                            //System.out.println(r.getStatus());
+                                            try {
+
                                             if (fisrtrequest.getStatus(secretKey).equals("sd")) {
                                                 System.out.println("> TCPListener: Request has been served at destination!");
-                                                fisrtrequest.setStatus("to",secretKey);
-
+                                                fisrtrequest.setStatus("to", secretKey);
+/*
                                                 //Envia a resposta
                                                 Object[] rarray = fisrtrequest.getResponse(secretKey);
                                                 for (Object s : rarray)
@@ -114,15 +115,16 @@ public class NodeTCPListener implements Runnable {
                                                 requests.remove(fisrtrequest);
 
                                              */
+                                            }
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
 
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
+
                                         }
-
-
+                                        System.out.println("> TCPListener: Model.Request has been removed from Queue!");
+                                        running = false;
                                     }
-                                    System.out.println("> Listener: Model.Request has been removed from Queue!");
-                                    running = false;
                                 }
 
 
