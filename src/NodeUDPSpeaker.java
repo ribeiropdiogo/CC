@@ -20,7 +20,7 @@ public class NodeUDPSpeaker implements Runnable{
         this.requests = r;
         this.peers = p;
         try {
-            socket = new DatagramSocket(4445);
+            socket = new DatagramSocket();
         } catch (SocketException e) {
             e.printStackTrace();
         }

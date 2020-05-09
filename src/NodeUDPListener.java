@@ -17,13 +17,12 @@ public class NodeUDPListener implements Runnable{
 
     public NodeUDPListener(String my_address) {
         try {
-            socket = new DatagramSocket();
+            try {
+                socket = new DatagramSocket(4445,InetAddress.getByName(my_address));
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
         } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        try {
-            this.address = InetAddress.getByName(my_address);
-        } catch (UnknownHostException e) {
             e.printStackTrace();
         }
     }
@@ -49,7 +48,7 @@ public class NodeUDPListener implements Runnable{
                 try {
                     Object o = in.readObject();
                     Request r = (Request) o;
-                    if (buf[0] == '\0') {
+                    if (buf.length == 0) {
                         running = false;
                         continue;
                     }
