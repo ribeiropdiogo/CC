@@ -76,6 +76,7 @@ public class NodeTCPListener implements Runnable {
                 if (!socket.getRemoteSocketAddress().toString().equals(target_address)) {
                     final Request r = new Request(this.node_address,socket.getRemoteSocketAddress().toString().substring(1),secretKey);
                     r.setMessage(data,secretKey);
+                    r.setContactNodeAddress(this.node_address,secretKey);
 
                     //r.printRequest();
 
