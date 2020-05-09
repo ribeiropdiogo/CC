@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class NodeTCPListener implements Runnable {
 
@@ -90,7 +91,11 @@ public class NodeTCPListener implements Runnable {
 
 
                                 while (running) {
-                                    System.out.println("> Requests: "+requests.size());
+                                    try {
+                                        TimeUnit.MILLISECONDS.sleep(250);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
                                     if (requests.size() > 0) {
                                         Request fisrtrequest = requests.first();
                                         //System.out.println("> status: "+fisrtrequest.getStatus(secretKey));
