@@ -90,7 +90,7 @@ public class NodeTCPListener implements Runnable {
 
 
                                 while (running) {
-
+                                    System.out.println("> Requests: "+requests.size());
                                     if (requests.size() > 0) {
                                         Request fisrtrequest = requests.first();
                                         //System.out.println("> status: "+fisrtrequest.getStatus(secretKey));
