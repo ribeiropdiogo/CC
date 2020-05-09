@@ -2,9 +2,7 @@ import java.io.*;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 public class NodeTCPListener implements Runnable {
 
@@ -15,7 +13,7 @@ public class NodeTCPListener implements Runnable {
     private SortedSet<Request> requests;
     private Boolean running;
     private Set<String> peers;
-    private Set<String> waitinglist;
+    private List<String> waitinglist;
     private int protected_port;
 
     final String secretKey = "HelpMeObiWanKenobi!";
@@ -28,7 +26,7 @@ public class NodeTCPListener implements Runnable {
         this.UDPsocket = usocket;
         this.peers = p;
         this.protected_port = port;
-        this.waitinglist =  new HashSet<>();
+        this.waitinglist =  new ArrayList<>();
     }
 
     private int random(int lower, int upper){
