@@ -24,6 +24,11 @@ public class NodeTCPReplier implements Runnable {
     public void run() {
         try {
             while (running) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(250);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 if (replies.size() > 0) {
                     Request requesttoserve = replies.first();
                     for (Iterator<Request> it = replies.iterator(); it.hasNext(); ) {
