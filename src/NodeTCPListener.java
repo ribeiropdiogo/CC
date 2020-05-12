@@ -12,7 +12,7 @@ public class NodeTCPListener implements Runnable {
     private String source_address;
     private Socket socket;
     private DatagramSocket UDPsocket;
-    private SortedSet<Request> requests;
+    private SortedSet<Request> requests, replies;
     private Boolean running;
     private Set<String> peers;
     private List<String> waitinglist;
@@ -55,7 +55,6 @@ public class NodeTCPListener implements Runnable {
 
         Thread handler = new Thread(){
             public void run(){
-                    Socket socket = null;
                     try {
                         RequestHandler rh = new RequestHandler(s,r,getPeer(),port);
                         new Thread(rh).start();
@@ -65,6 +64,22 @@ public class NodeTCPListener implements Runnable {
             }
         };
         handler.start();
+    }
+
+    public void startTCPReplier(BufferedWriter out, String client) throws IOException {
+
+        Thread listener = new Thread(){
+            public void run(){
+                try {
+                    NodeTCPReplier nl = new NodeTCPReplier(socket,replies,out,client);
+                    new Thread(nl).start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        listener.start();
     }
 
     public void run() {
@@ -90,60 +105,11 @@ public class NodeTCPListener implements Runnable {
                         System.out.println("> TCPListener: Sent the new Request");
                         //System.out.println("> Listener: Queue size is " + requests.size());
 
+                        startTCPReplier(out,clientaddress);
 
-                                while (running) {
-                                    try {
-                                        TimeUnit.MILLISECONDS.sleep(250);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    if (requests.size() > 0) {
-                                        Request requesttoserve = requests.first();
-                                        for (Iterator<Request> it = requests.iterator(); it.hasNext(); ) {
-                                            Request f = it.next();
-                                            if (f.getOrigin_address(secretKey).equals(clientaddress))
-                                                requesttoserve = f;
-                                        }
-
-                                        //System.out.println("> status: "+fisrtrequest.getStatus(secretKey));
-                                        while (!requesttoserve.getStatus(secretKey).equals("so")) {
-                                            try {
-
-                                            if (requesttoserve.getStatus(secretKey).equals("sd")) {
-                                                System.out.println("> TCPListener: Request has been served at destination!");
-                                                requesttoserve.setStatus("to", secretKey);
-
-                                                //Envia a resposta
-                                                Object[] rarray = requesttoserve.getResponse(secretKey);
-                                                for (Object s : rarray)
-                                                    out.write(s.toString());
-
-                                                out.flush();
-
-                                                requesttoserve.setStatus("so",secretKey);
-                                                System.out.println("> TCPListener: Request has been served at origin!");
-
-                                                requests.remove(requesttoserve);
-
-
-                                            }
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-
-
-                                        }
-                                        System.out.println("> TCPListener: Request has been removed from Queue!");
-                                        running = false;
-                                    }
-                                }
                     }
-            }
+                }
 
-
-
-            socket.close();
-            out.flush();
             System.out.println("> TCPListener: Job Ended");
         } catch (Exception e) {
             e.printStackTrace();

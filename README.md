@@ -4,6 +4,9 @@
 
 Densenvolvimento de uma rede overlay de anonimização do originador através de nós intermédios anonimizadores, que permitem simular uma rede end-to-end.
 
+## Requisitos
+- Java (version > 8)
+
 ## Correr o CORE
 ```
 sudo /etc/init.d/core-daemon start

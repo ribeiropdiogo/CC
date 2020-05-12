@@ -14,7 +14,7 @@ public class Node {
     private ServerSocket external_socket_in;
     private Socket external_socket_out;
     private DatagramSocket internal_socket;
-    private SortedSet<Request> requests;
+    private SortedSet<Request> requests, replies;
 
     /* CONSTRUTORES */
 
@@ -29,6 +29,7 @@ public class Node {
         peers = new HashSet<>();
         Comparator comparator = new RequestComparator();
         requests = new TreeSet(comparator);
+        replies = new TreeSet(comparator);
 
         try {
             internal_socket = new DatagramSocket(protected_port);
@@ -98,7 +99,7 @@ public class Node {
                     Socket socket = null;
                     try {
                         socket = external_socket_in.accept();
-                        NodeTCPListener nl = new NodeTCPListener(socket, requests, target_address, my_address, internal_socket, peers,protected_port);
+                        NodeTCPListener nl = new NodeTCPListener(socket, requests,target_address, my_address, internal_socket, peers,protected_port);
                         new Thread(nl).start();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -109,6 +110,7 @@ public class Node {
 
         listener.start();
     }
+
 
     // Esta função é usada para o nó comunicar com o servidor de destino
     public void startTCPSpeaker() {
@@ -151,7 +153,7 @@ public class Node {
         Thread ulistener = new Thread(){
             public void run(){
                 try {
-                    NodeUDPListener nul = new NodeUDPListener(internal_socket,requests);
+                    NodeUDPListener nul = new NodeUDPListener(internal_socket,requests,replies);
                     new Thread(nul).start();
                 } catch (Exception e) {
                     e.printStackTrace();

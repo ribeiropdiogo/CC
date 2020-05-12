@@ -8,7 +8,7 @@ public class NodeUDPListener implements Runnable{
 
     private PrintWriter out;
     private BufferedReader in;
-    private SortedSet<Request> requests;
+    private SortedSet<Request> requests, replies;
     private Set<String> peers;
     private DatagramSocket socket;
     private volatile boolean running = true;
@@ -16,10 +16,13 @@ public class NodeUDPListener implements Runnable{
     private byte[] requestBuffer = new byte[20*1024];
     private InetAddress address;
 
-    public NodeUDPListener(DatagramSocket socket, SortedSet<Request> r) {
+    final String secretKey = "HelpMeObiWanKenobi!";
+
+    public NodeUDPListener(DatagramSocket socket, SortedSet<Request> r, SortedSet<Request> rep) {
         try {
             this.socket = socket;
             this.requests = r;
+            this.replies = rep;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,8 +49,13 @@ public class NodeUDPListener implements Runnable{
                 Request r = (Request)deserialize(requestBuffer);
                 Arrays.fill(requestBuffer, (byte)0);
                 System.out.println("> UDPListener: Converting packet to Request");
-                requests.add(r);
-                System.out.println("> UDPListener: Request added to queue");
+                if (r.getStatus(secretKey).equals("na")) {
+                    requests.add(r);
+                    System.out.println("> UDPListener: Request added to queue");
+                } else if (r.getStatus(secretKey).equals("sd")){
+                    replies.add(r);
+                    System.out.println("> UDPListener: Replie added to queue");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
