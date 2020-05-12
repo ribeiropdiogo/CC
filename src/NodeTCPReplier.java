@@ -36,7 +36,7 @@ public class NodeTCPReplier implements Runnable {
                         if (f.getOrigin_address(secretKey).equals(clientaddress))
                             requesttoserve = f;
                     }
-                    System.out.println("> "+requesttoserve.getOrigin_address(secretKey));
+                    System.out.println("> "+requesttoserve.getOrigin_address(secretKey)+" | "+clientaddress);
                     if(requesttoserve.getOrigin_address(secretKey).equals(clientaddress)) {
                         try {
                             if (requesttoserve.getStatus(secretKey).equals("sd")) {
