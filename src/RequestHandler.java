@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.SortedSet;
 
 public class RequestHandler implements Runnable{
     private DatagramSocket internal_socket;
@@ -12,6 +13,7 @@ public class RequestHandler implements Runnable{
     private Request request;
     private int protected_port;
     private volatile boolean running = true;
+    private SortedSet<PDU> storage;
     private int max_data_chunk = 50 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
 
     final String secretKey = "HelpMeObiWanKenobi!";
