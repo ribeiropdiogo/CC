@@ -9,7 +9,7 @@ public class Node {
     private String my_address;
     private Set<String> peers;
     private String target_address;
-    private int outside_port;
+    private int outside_port, served = 0;
     private int protected_port = 6666;
     private ServerSocket external_socket_in;
     private Socket external_socket_out;
@@ -99,7 +99,8 @@ public class Node {
                     Socket socket = null;
                     try {
                         socket = external_socket_in.accept();
-                        NodeTCPListener nl = new NodeTCPListener(socket, requests,replies,target_address, my_address, internal_socket, peers,protected_port);
+                        served++;
+                        NodeTCPListener nl = new NodeTCPListener(socket, requests,replies,target_address, my_address, internal_socket, peers,protected_port,served);
                         new Thread(nl).start();
                     } catch (Exception e) {
                         e.printStackTrace();
