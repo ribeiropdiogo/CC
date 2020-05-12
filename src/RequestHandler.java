@@ -70,10 +70,8 @@ public class RequestHandler implements Runnable{
                     //Adicionar pdu ao armazem no caso de falhar algum pacote
                     //storage.add(pdu);
 
-
                     //Pdu para bytes
                     byte[] pdubuffer = serialize(pdu);
-                    //Enviar o PDU
 
                     System.out.println("PDU info:");
                     System.out.println("id: "+pdu.getIdentifier(secretKey));
@@ -82,7 +80,9 @@ public class RequestHandler implements Runnable{
                     System.out.println("position: "+pdu.getPosition());
                     System.out.println("datasize: "+pdu.getData().length);
 
-                    DatagramPacket packet = new DatagramPacket(pdubuffer, pdu_size, address, this.protected_port);
+
+                    //Enviar o PDU
+                    DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
                     internal_socket.send(packet);
                 }
 
