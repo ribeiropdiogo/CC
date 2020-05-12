@@ -13,7 +13,7 @@ public class RequestHandler implements Runnable{
     private Request request;
     private int protected_port;
     private volatile boolean running = true;
-    private SortedSet<PDU> storage;
+    //private SortedSet<PDU> storage;
     private int max_data_chunk = 50 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
 
     final String secretKey = "HelpMeObiWanKenobi!";
@@ -63,13 +63,12 @@ public class RequestHandler implements Runnable{
                     if (remain < max_data_chunk)
                         tam = remain;
                     else  tam = max_data_chunk;
-                    System.out.println("---- "+tam);
-                    Thread.sleep(10000);
+
                     System.arraycopy(buffer, j*max_data_chunk, aux, 0, tam);
                     pdu.setData(aux);
 
                     //Adicionar pdu ao armazem no caso de falhar algum pacote
-                    storage.add(pdu);
+                    //storage.add(pdu);
 
 
                     //Pdu para bytes
