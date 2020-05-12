@@ -49,7 +49,7 @@ public class RequestHandler implements Runnable{
                 float f = ((float)buffer.length/(float)max_data_chunk);
                 int i = (int)Math.ceil(f);
 
-                System.out.println(">: "+i+" "+buffer.length+" "+max_data_chunk+" | "+f+" | "+Math.ceil(f));
+                //System.out.println(">: "+i+" "+buffer.length+" "+max_data_chunk+" | "+f+" | "+Math.ceil(f));
                 for (int j = 0;j < i;j++){
                     PDU pdu = new PDU();
                     pdu.setIdentifier(identifier,secretKey);
@@ -57,7 +57,11 @@ public class RequestHandler implements Runnable{
                     pdu.setPosition(j+1);
                     pdu.setTotal_fragments(i);
                     byte[] aux = new byte[max_data_chunk];
-                    System.arraycopy(buffer, 0, aux, 0, max_data_chunk);
+                    int tam = 0;
+                    if (buffer.length < max_data_chunk)
+                        tam = buffer.length;
+
+                    System.arraycopy(buffer, i*max_data_chunk, aux, 0, max_data_chunk);
                     pdu.setData(aux);
 
                     //Adicionar pdu ao armazem no caso de falhar algum pacote
