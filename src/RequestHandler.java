@@ -63,7 +63,8 @@ public class RequestHandler implements Runnable{
                     if (remain < max_data_chunk)
                         tam = remain;
                     else  tam = max_data_chunk;
-
+                    System.out.println("---- "+tam);
+                    Thread.sleep(10000);
                     System.arraycopy(buffer, i*max_data_chunk, aux, 0, tam);
                     pdu.setData(aux);
 
