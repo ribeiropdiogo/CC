@@ -46,7 +46,7 @@ public class RequestHandler implements Runnable{
                 address = InetAddress.getByName(peer);
 
                 //pegar em pedaços do buffer e criar PDU's
-                float f = buffer.length/max_data_chunk;
+                float f = ((float)buffer.length/(float)max_data_chunk);
                 int i = (int)Math.ceil(f);
 
                 System.out.println(">: "+i+" "+buffer.length+" "+max_data_chunk+" | "+f+" | "+Math.ceil(f));
