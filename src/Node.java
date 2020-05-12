@@ -15,7 +15,7 @@ public class Node {
     private Socket external_socket_out;
     private DatagramSocket internal_socket;
     private SortedSet<Request> requests, replies;
-    private Map<String,SortedSet<PDU>> pduPackets;
+    private Map<String,SortedSet<PDU>> pduPackets; //ainda não está implementado, mas em principio vamos armazenar aqui os pacotes que chegam ao nodo enquando não chegaram todos os seus parceiros
 
     /* CONSTRUTORES */
 
