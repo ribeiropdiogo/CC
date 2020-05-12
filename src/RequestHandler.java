@@ -48,6 +48,7 @@ public class RequestHandler implements Runnable{
                 //pegar em pedaços do buffer e criar PDU's
                 int i = (int)Math.ceil(buffer.length/max_data_chunk);
 
+                System.out.println(">: "+i+" "+buffer.length+" "+max_data_chunk);
                 for (int j = 0;j < i;j++){
                     PDU pdu = new PDU();
                     pdu.setIdentifier(identifier,secretKey);
@@ -65,6 +66,14 @@ public class RequestHandler implements Runnable{
                     //Pdu para bytes
                     byte[] pdubuffer = serialize(pdu);
                     //Enviar o PDU
+
+                    System.out.println("PDU info:");
+                    System.out.println("id: "+pdu.getIdentifier(secretKey));
+                    System.out.println("control: "+pdu.getControl());
+                    System.out.println("fragments: "+pdu.getTotal_fragments());
+                    System.out.println("position: "+pdu.getPosition());
+                    System.out.println("datasize: "+pdu.getData().length);
+
                     DatagramPacket packet = new DatagramPacket(pdubuffer, pdu_size, address, this.protected_port);
                     internal_socket.send(packet);
                 }
