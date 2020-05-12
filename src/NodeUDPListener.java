@@ -54,7 +54,7 @@ public class NodeUDPListener implements Runnable{
                     System.out.println("> UDPListener: Request added to queue");
                 } else if (r.getStatus(secretKey).equals("sd")){
                     replies.add(r);
-                    System.out.println("> UDPListener: Replie added to queue");
+                    System.out.println("> UDPListener: Reply added to queue");
                 }
             } catch (Exception e) {
                 e.printStackTrace();

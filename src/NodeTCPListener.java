@@ -20,7 +20,7 @@ public class NodeTCPListener implements Runnable {
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
-    public NodeTCPListener(Socket s, SortedSet<Request> r, String address, String naddress, DatagramSocket usocket, Set<String> p, int port) {
+    public NodeTCPListener(Socket s, SortedSet<Request> r, SortedSet<Request> rep, String address, String naddress, DatagramSocket usocket, Set<String> p, int port) {
         this.socket = s;
         this.requests = r;
         this.target_address = address;
@@ -30,6 +30,7 @@ public class NodeTCPListener implements Runnable {
         this.peers = p;
         this.protected_port = port;
         this.waitinglist =  new ArrayList<>();
+        this.replies = rep;
     }
 
     private int random(int lower, int upper){

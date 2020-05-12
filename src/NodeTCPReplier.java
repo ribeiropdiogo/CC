@@ -14,7 +14,7 @@ public class NodeTCPReplier implements Runnable {
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
-    public NodeTCPReplier(Socket s, SortedSet<Request> r,BufferedWriter out, String client) {
+    public NodeTCPReplier(Socket s, SortedSet<Request> r, BufferedWriter out, String client) {
         this.socket = s;
         this.replies = r;
         this.clientaddress = client;
@@ -25,7 +25,7 @@ public class NodeTCPReplier implements Runnable {
         try {
             while (running) {
                 try {
-                    TimeUnit.MILLISECONDS.sleep(1000);
+                    TimeUnit.MILLISECONDS.sleep(250);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
