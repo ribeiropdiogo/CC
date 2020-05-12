@@ -48,6 +48,7 @@ public class RequestHandler implements Runnable{
                 //pegar em pedaços do buffer e criar PDU's
                 int i = (int)Math.ceil(buffer.length/max_data_chunk);
 
+                System.out.println(">: "+i+" "+buffer.length+" "+max_data_chunk);
                 for (int j = 0;j < i;j++){
                     PDU pdu = new PDU();
                     pdu.setIdentifier(identifier,secretKey);
