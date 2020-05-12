@@ -15,6 +15,7 @@ public class Node {
     private Socket external_socket_out;
     private DatagramSocket internal_socket;
     private SortedSet<Request> requests, replies;
+    private Map<String,SortedSet<PDU>> pduPackets;
 
     /* CONSTRUTORES */
 
