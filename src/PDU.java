@@ -1,4 +1,6 @@
-public class PDU {
+import java.io.Serializable;
+
+public class PDU implements Serializable {
 
     private String identifier;
     private int position, control, total_fragments, last;
