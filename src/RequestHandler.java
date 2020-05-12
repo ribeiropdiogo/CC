@@ -58,10 +58,13 @@ public class RequestHandler implements Runnable{
                     pdu.setTotal_fragments(i);
                     byte[] aux = new byte[max_data_chunk];
                     int tam = 0;
-                    if (buffer.length < max_data_chunk)
-                        tam = buffer.length;
 
-                    System.arraycopy(buffer, i*max_data_chunk, aux, 0, max_data_chunk);
+                    int remain = buffer.length - i*max_data_chunk;
+                    if (remain < max_data_chunk)
+                        tam = remain;
+                    else  tam = max_data_chunk;
+
+                    System.arraycopy(buffer, i*max_data_chunk, aux, 0, tam);
                     pdu.setData(aux);
 
                     //Adicionar pdu ao armazem no caso de falhar algum pacote
