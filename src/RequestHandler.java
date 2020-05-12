@@ -58,6 +58,14 @@ public class RequestHandler implements Runnable{
                     //Pdu para bytes
                     byte[] pdubuffer = serialize(pdu);
                     //Enviar o PDU
+
+                    System.out.println("PDU info:");
+                    System.out.println("id: "+pdu.getIdentifier(secretKey));
+                    System.out.println("control: "+pdu.getControl());
+                    System.out.println("fragments: "+pdu.getTotal_fragments());
+                    System.out.println("position: "+pdu.getPosition());
+                    System.out.println("datasize: "+pdu.getData().length);
+
                     DatagramPacket packet = new DatagramPacket(pdubuffer, pdu_size, address, this.protected_port);
                     internal_socket.send(packet);
                 }
