@@ -59,46 +59,6 @@ public class NodeUDPListener implements Runnable{
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
-
-            /*
-            DatagramPacket packet = new DatagramPacket(buf, buf.length);
-            try {
-                socket.receive(packet);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            ByteArrayInputStream bis = new ByteArrayInputStream(buf);
-            ObjectInput in = null;
-            try {
-                try {
-                    in = new ObjectInputStream(bis);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    Object o = in.readObject();
-                    Request r = (Request) o;
-                    if (buf.length == 0) {
-                        running = false;
-                        continue;
-                    }
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } finally {
-                try {
-                    if (in != null) {
-                        in.close();
-                    }
-                } catch (IOException ex) {
-                    // ignore close exception
-                }
-            }
-            */
         }
     }
 }

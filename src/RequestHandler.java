@@ -31,12 +31,15 @@ public class RequestHandler implements Runnable{
         while (running) {
             System.out.println("> Launched RequestHandler");
             try {
-                byte[] buffer = new byte[20 * 1024];
+                byte[] buffer = new byte[50 * 1024];
                 buffer = serialize(request);
                 InetAddress address = null;
                 address = InetAddress.getByName(peer);
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, this.protected_port);
                 internal_socket.send(packet);
+
+
+
                 System.out.println("> RequestHandler: Sent Request to peer "+address);
                 running = false;
             } catch (Exception e) {
