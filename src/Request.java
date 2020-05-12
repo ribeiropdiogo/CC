@@ -12,7 +12,7 @@ public class Request implements Serializable {
     private List<String> response;
     private String status; // na -> não atendido / ad -> atendido no destino / sd -> servido no destino / to -> a ser transmitido à origem / so -> servido na origem / tbd -> to be deleted
 
-    public Request(String address, String node_address, String secretKey){
+    public Request(String node_address, String address, String secretKey){
         this.creationTime = System.currentTimeMillis();
         this.origin_address = AES.encrypt(address, secretKey) ;;
         this.status = AES.encrypt("na", secretKey) ;;
