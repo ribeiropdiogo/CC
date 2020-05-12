@@ -8,7 +8,7 @@ public class NodeTCPReplier implements Runnable {
 
     private Socket socket;
     private SortedSet<Request> replies;
-    private Boolean running;
+    private Boolean running = true;
     private String clientaddress;
     private BufferedWriter out;
 
