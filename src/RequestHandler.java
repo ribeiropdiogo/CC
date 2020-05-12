@@ -57,6 +57,11 @@ public class RequestHandler implements Runnable{
                     byte[] aux = new byte[max_data_chunk];
                     System.arraycopy(buffer, 0, aux, 0, max_data_chunk);
                     pdu.setData(aux);
+
+                    //Adicionar pdu ao armazem no caso de falhar algum pacote
+                    storage.add(pdu);
+
+
                     //Pdu para bytes
                     byte[] pdubuffer = serialize(pdu);
                     //Enviar o PDU
