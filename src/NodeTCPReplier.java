@@ -25,7 +25,7 @@ public class NodeTCPReplier implements Runnable {
         try {
             while (running) {
                 try {
-                    TimeUnit.MILLISECONDS.sleep(250);
+                    TimeUnit.MILLISECONDS.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
