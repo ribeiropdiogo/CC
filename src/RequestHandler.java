@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.SortedSet;
 
 public class RequestHandler implements Runnable{
     private DatagramSocket internal_socket;
@@ -12,6 +13,7 @@ public class RequestHandler implements Runnable{
     private Request request;
     private int protected_port;
     private volatile boolean running = true;
+    private SortedSet<PDU> storage;
 
     public RequestHandler(DatagramSocket socket, Request r, String peer, int port){
         this.internal_socket = socket;

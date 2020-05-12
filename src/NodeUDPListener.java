@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -15,6 +16,7 @@ public class NodeUDPListener implements Runnable{
     private byte[] buffer = new byte[20*1024];
     private byte[] requestBuffer = new byte[20*1024];
     private InetAddress address;
+    private Map<String,SortedSet<PDU>> pduPackets; //ainda não está implementado, mas em principio vamos armazenar aqui os pacotes que chegam ao nodo enquando não chegaram todos os seus parceiros
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
