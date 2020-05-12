@@ -24,12 +24,6 @@ public class NodeTCPReplier implements Runnable {
     public void run() {
         try {
             while (running) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(250);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 if (replies.size() > 0) {
                     Request requesttoserve = replies.first();
                     for (Iterator<Request> it = replies.iterator(); it.hasNext(); ) {
@@ -37,8 +31,8 @@ public class NodeTCPReplier implements Runnable {
                         if (f.getOrigin_address(secretKey).equals(clientaddress))
                             requesttoserve = f;
                     }
-
-                    if(!requesttoserve.getStatus(secretKey).equals("so") && requesttoserve.getOrigin_address(secretKey).equals(clientaddress)) {
+                    System.out.println("asdadadasdasdasdasdasdadadasd");
+                    if(requesttoserve.getOrigin_address(secretKey).equals(clientaddress)) {
                         try {
                             if (requesttoserve.getStatus(secretKey).equals("sd")) {
                                 System.out.println("> TCPReplier: Request has been served at destination!");
@@ -61,8 +55,8 @@ public class NodeTCPReplier implements Runnable {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                        running = false;
                     }
-                    running = false;
                 }
             }
 
