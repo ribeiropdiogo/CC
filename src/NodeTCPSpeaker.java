@@ -28,13 +28,13 @@ public class NodeTCPSpeaker implements Runnable {
         this.UDPsocket = socket;
     }
 
-    public void startRequestHandler(DatagramSocket s, Request r) throws IOException {
+    public void startRequestHandler(DatagramSocket s, Request r, int j, String address) throws IOException {
 
         Thread handler = new Thread(){
             public void run(){
                 Socket socket = null;
                 try {
-                    RequestHandler rh = new RequestHandler(s,r,r.getContactNodeAddress(secretKey),protected_port);
+                    RequestHandler rh = new RequestHandler(s,r,r.getContactNodeAddress(secretKey),protected_port,j,address);
                     new Thread(rh).start();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -47,6 +47,7 @@ public class NodeTCPSpeaker implements Runnable {
 
     public void run() {
         try {
+            int i = 0;
             while (running) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(250);
@@ -86,7 +87,8 @@ public class NodeTCPSpeaker implements Runnable {
 
 
                         //enviar o request via udp de volta
-                        startRequestHandler(this.UDPsocket,r);
+                        i++;
+                        startRequestHandler(this.UDPsocket,r,i,external_socket_out.getInetAddress().getHostAddress());
 
                         //remover o request da fila de espera deste nodo
                         requests.remove(r);

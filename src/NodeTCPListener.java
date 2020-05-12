@@ -16,11 +16,11 @@ public class NodeTCPListener implements Runnable {
     private Boolean running;
     private Set<String> peers;
     private List<String> waitinglist;
-    private int protected_port;
+    private int protected_port, requestn;
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
-    public NodeTCPListener(Socket s, SortedSet<Request> r, SortedSet<Request> rep, String address, String naddress, DatagramSocket usocket, Set<String> p, int port) {
+    public NodeTCPListener(Socket s, SortedSet<Request> r, SortedSet<Request> rep, String address, String naddress, DatagramSocket usocket, Set<String> p, int port, int served) {
         this.socket = s;
         this.requests = r;
         this.target_address = address;
@@ -31,6 +31,7 @@ public class NodeTCPListener implements Runnable {
         this.protected_port = port;
         this.waitinglist =  new ArrayList<>();
         this.replies = rep;
+        this.requestn = served;
     }
 
     private int random(int lower, int upper){
@@ -57,7 +58,7 @@ public class NodeTCPListener implements Runnable {
         Thread handler = new Thread(){
             public void run(){
                     try {
-                        RequestHandler rh = new RequestHandler(s,r,getPeer(),port);
+                        RequestHandler rh = new RequestHandler(s,r,getPeer(),port,requestn,node_address);
                         new Thread(rh).start();
                     } catch (Exception e) {
                         e.printStackTrace();
