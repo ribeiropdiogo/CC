@@ -45,7 +45,6 @@ public class NodeUDPListener implements Runnable{
                 requestBuffer = packet.getData();
 
                 //Adiciona pdu ao map
-                /*
                 System.out.println("> UDPListener: Converting Buffer to PDU");
                 PDU pdu = new PDU();
                 pdu = (PDU)deserialize(requestBuffer);
@@ -63,7 +62,9 @@ public class NodeUDPListener implements Runnable{
                     //add pdu if its not in list
                     if (!pduS.contains(pdu)) pduS.add(pdu);
                 }
-                 */
+
+                //Verificar se já temos os pacotes todos
+
 
                 //Ainda temos que mudar isto. Temos que ir buscar os pdus ao map quando eles já estiveram lá todos para converter para Request
 
