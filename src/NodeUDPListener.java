@@ -1,9 +1,6 @@
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 public class NodeUDPListener implements Runnable{
 
@@ -26,6 +23,7 @@ public class NodeUDPListener implements Runnable{
             this.socket = socket;
             this.requests = r;
             this.replies = rep;
+            this.pduPackets = new HashMap<>();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,7 +44,30 @@ public class NodeUDPListener implements Runnable{
                 System.out.println("> UDPListener: Receiving packet");
                 requestBuffer = packet.getData();
 
-                System.out.println("> UDPListener: packet received");
+                //Adiciona pdu ao map
+                /*
+                System.out.println("> UDPListener: Converting Buffer to PDU");
+                PDU pdu = new PDU();
+                pdu = (PDU)deserialize(requestBuffer);
+                Arrays.fill(requestBuffer, (byte)0);
+
+                SortedSet<PDU> pduS = pduPackets.get(pdu.getIdentifier(secretKey));
+
+                // if sorted set does not exist create it
+                if(pduS == null) {
+                    Comparator comparator = new PDUComparator();
+                    pduS = new TreeSet<>(comparator); // Eu fiz em forma de SortedSet, mas ainda temos que fazer um comparador decente
+                    pduS.add(pdu);
+                    pduPackets.put(pdu.getIdentifier(secretKey),pduS);
+                } else {
+                    //add pdu if its not in list
+                    if (!pduS.contains(pdu)) pduS.add(pdu);
+                }
+                 */
+
+                //Ainda temos que mudar isto. Temos que ir buscar os pdus ao map quando eles já estiveram lá todos para converter para Request
+
+                System.out.println("> UDPListener: Packet Received");
                 // colocar esses pacotes udp na fila de espera
                 Request r = (Request)deserialize(requestBuffer);
                 Arrays.fill(requestBuffer, (byte)0);
