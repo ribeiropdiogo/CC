@@ -50,6 +50,9 @@ public class NodeUDPListener implements Runnable{
                 System.out.println("> UDPListener: Receiving packet");
                 requestBuffer = packet.getData();
 
+
+                //O QUE EU FIZ - DESCOMENTA ISTO PARA VER O QUE EU FIZ E COMENTA A PARTE QUE ESTAVA ANTES
+
                 /*
                 //Adiciona pdu ao map
                 System.out.println("> UDPListener: Converting Buffer to PDU");
@@ -109,6 +112,11 @@ public class NodeUDPListener implements Runnable{
 
                 //Ainda temos que mudar isto. Temos que ir buscar os pdus ao map quando eles já estiveram lá todos para converter para Request
 
+
+
+                // COMO ESTAVA ANTES - COMENTA ISTO PARA VERES COMO EU FIZ
+
+                ///*
                 System.out.println("> UDPListener: Packet Received");
                 // colocar esses pacotes udp na fila de espera
                 Request r = (Request)deserialize(requestBuffer);
@@ -121,6 +129,7 @@ public class NodeUDPListener implements Runnable{
                     replies.add(r);
                     System.out.println("> UDPListener: Reply added to queue");
                 }
+                //*/
 
             } catch (Exception e) {
                 e.printStackTrace();
