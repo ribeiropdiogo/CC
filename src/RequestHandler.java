@@ -84,10 +84,10 @@ public class RequestHandler implements Runnable{
 
                     //Adicionar pdu ao armazem no caso de falhar algum pacote
                     //storage.add(pdu);
-                    Request r = (Request) deserialize(buffer);
                     //Pdu para bytes
                     byte[] pdubuffer = serialize(pdu);
 
+                    PDU r = (PDU) deserialize(pdubuffer);
                     System.out.println("PDU info:");
                     System.out.println("PDU size: "+pdubuffer.length);
                     System.out.println("id: "+pdu.getIdentifier(secretKey));
