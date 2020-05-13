@@ -61,11 +61,11 @@ public class NodeUDPListener implements Runnable{
             System.out.println("> pdata size "+p.getData().length);
             byte[] buffer = new byte[p.getData().length];
             System.out.println("> buffer size "+buffer.length);
-            System.arraycopy(p.getData(), 0, buffer, 0, p.getData().length);
-            int j = 1;
+            int j = 0;
             for (Iterator<PDU> it = fragments.iterator(); it.hasNext(); ) {
                 PDU n = it.next();
                 System.arraycopy(n.getData(), 0, buffer, j*max_data_chunk, n.getData().length);
+                j++;
             }
 
             Request r = (Request)deserialize(buffer);
