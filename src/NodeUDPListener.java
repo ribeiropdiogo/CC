@@ -17,6 +17,7 @@ public class NodeUDPListener implements Runnable{
     private byte[] requestBuffer = new byte[20*1024];
     private InetAddress address;
     private Map<String,SortedSet<PDU>> pduPackets; //ainda não está implementado, mas em principio vamos armazenar aqui os pacotes que chegam ao nodo enquando não chegaram todos os seus parceiros
+    private int max_data_chunk = 50 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
@@ -44,7 +45,6 @@ public class NodeUDPListener implements Runnable{
                 socket.receive(packet);
                 System.out.println("> UDPListener: Receiving packet");
                 requestBuffer = packet.getData();
-
 
                 System.out.println("> UDPListener: packet received");
                 // colocar esses pacotes udp na fila de espera
