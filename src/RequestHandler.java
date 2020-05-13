@@ -1,6 +1,4 @@
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -35,6 +33,19 @@ public class RequestHandler implements Runnable{
         byte[] b = out.toByteArray();
         out.close();
         return b;
+    }
+
+    private static Object deserialize(byte[] data) {
+        Object o = null;
+        try {
+            ByteArrayInputStream in = new ByteArrayInputStream(data);
+            ObjectInputStream is = new ObjectInputStream(in);
+            o = is.readObject();
+            is.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return o;
     }
 
     public void run() {
@@ -73,7 +84,7 @@ public class RequestHandler implements Runnable{
 
                     //Adicionar pdu ao armazem no caso de falhar algum pacote
                     //storage.add(pdu);
-
+                    Request r = (Request) deserialize(buffer);
                     //Pdu para bytes
                     byte[] pdubuffer = serialize(pdu);
 
