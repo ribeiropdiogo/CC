@@ -11,7 +11,7 @@ public class NodeUDPListener implements Runnable{
     private DatagramSocket socket;
     private int max_data_chunk = 10 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
     private volatile boolean running = true;
-    private byte[] buffer = new byte[10*1024];
+    private byte[] buffer;
     private byte[] pduBuffer;
     private InetAddress address;
     private Map<String,SortedSet<PDU>> pduPackets; //ainda não está implementado, mas em principio vamos armazenar aqui os pacotes que chegam ao nodo enquando não chegaram todos os seus parceiros
