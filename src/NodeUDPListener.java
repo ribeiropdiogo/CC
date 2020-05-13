@@ -59,7 +59,7 @@ public class NodeUDPListener implements Runnable{
             SortedSet<PDU> fragments = pduPackets.get(id);
             PDU p = fragments.first();
             System.out.println("> pdata size "+p.getData().length);
-            byte[] buffer = new byte[p.getTotalSize()];
+            byte[] buffer = new byte[p.getData().length];
             System.out.println("> buffer size "+buffer.length);
             System.arraycopy(p.getData(), 0, buffer, 0, p.getData().length);
             int j = 1;
