@@ -12,7 +12,7 @@ public class RequestHandler implements Runnable{
     private int protected_port;
     private volatile boolean running = true;
     //private SortedSet<PDU> storage;
-    private int max_data_chunk = 50 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
+    private int max_data_chunk = 10 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
@@ -87,7 +87,6 @@ public class RequestHandler implements Runnable{
                     //Pdu para bytes
                     byte[] pdubuffer = serialize(pdu);
 
-                    PDU r = (PDU) deserialize(pdubuffer);
                     System.out.println("PDU info:");
                     System.out.println("PDU size: "+pdubuffer.length);
                     System.out.println("id: "+pdu.getIdentifier(secretKey));
