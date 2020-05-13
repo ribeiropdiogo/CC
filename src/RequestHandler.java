@@ -66,6 +66,7 @@ public class RequestHandler implements Runnable{
                 int i = (int)Math.ceil(f);
 
                 //System.out.println(">: "+i+" "+buffer.length+" "+max_data_chunk+" | "+f+" | "+Math.ceil(f));
+                /*
                 for (int j = 0;j < i;j++){
                     PDU pdu = new PDU();
                     pdu.setIdentifier(identifier,secretKey);
@@ -101,7 +102,25 @@ public class RequestHandler implements Runnable{
                     //Enviar o PDU
                     DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
                     internal_socket.send(packet);
-                }
+                }*/
+
+                PDU pdu = new PDU();
+                pdu.setIdentifier(identifier,secretKey);
+                pdu.setControl(0);
+                pdu.setPosition(1);
+                pdu.setTotal_fragments(1);
+                pdu.setTotalSize(buffer.length);
+                pdu.setData(buffer);
+                byte[] pdubuffer = serialize(pdu);
+                System.out.println("PDU info:");
+                System.out.println("PDU size: "+pdubuffer.length);
+                System.out.println("id: "+pdu.getIdentifier(secretKey));
+                System.out.println("control: "+pdu.getControl());
+                System.out.println("fragments: "+pdu.getTotal_fragments());
+                System.out.println("position: "+pdu.getPosition());
+                System.out.println("datasize: "+pdu.getData().length);
+                DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
+                internal_socket.send(packet);
 
                 System.out.println("> RequestHandler: Sent Request to peer "+address);
                 running = false;
