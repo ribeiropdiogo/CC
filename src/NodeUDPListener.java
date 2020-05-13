@@ -35,6 +35,12 @@ public class NodeUDPListener implements Runnable{
         return is.readObject();
     }
 
+    public static byte[] addAll(final byte[] array1, byte[] array2) {
+        byte[] joinedArray = Arrays.copyOf(array1, array1.length + array2.length);
+        System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
+        return joinedArray;
+    }
+
     public void run() {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         while (running) {
@@ -44,26 +50,61 @@ public class NodeUDPListener implements Runnable{
                 System.out.println("> UDPListener: Receiving packet");
                 requestBuffer = packet.getData();
 
+                /*
                 //Adiciona pdu ao map
                 System.out.println("> UDPListener: Converting Buffer to PDU");
                 PDU pdu = new PDU();
                 pdu = (PDU)deserialize(requestBuffer);
                 Arrays.fill(requestBuffer, (byte)0);
+                System.out.println("> UDPListener: Packet Received");
 
-                SortedSet<PDU> pduS = pduPackets.get(pdu.getIdentifier(secretKey));
+                //Verifica se é um PDU de controlo
+                if(pdu.getControl() == 1) {
 
-                // if sorted set does not exist create it
-                if(pduS == null) {
-                    Comparator comparator = new PDUComparator();
-                    pduS = new TreeSet<>(comparator); // Eu fiz em forma de SortedSet, mas ainda temos que fazer um comparador decente
-                    pduS.add(pdu);
-                    pduPackets.put(pdu.getIdentifier(secretKey),pduS);
+                    //Se sim, temos que inicializar o RequestHandler e enviar o pacote que falta;
+                    System.out.println("> UDPListener: Error Control Packet Received");
+
                 } else {
-                    //add pdu if its not in list
-                    if (!pduS.contains(pdu)) pduS.add(pdu);
-                }
 
-                //Verificar se já temos os pacotes todos
+                    SortedSet<PDU> pduS = pduPackets.get(pdu.getIdentifier(secretKey));
+
+                    // if sorted set does not exist create it
+                    if(pduS == null) {
+                        Comparator comparator = new PDUComparator();
+                        pduS = new TreeSet<>(comparator); // Eu fiz em forma de SortedSet, mas ainda temos que fazer um comparador decente
+                        pduS.add(pdu);
+                        pduPackets.put(pdu.getIdentifier(secretKey),pduS);
+                    } else {
+                        //add pdu if its not in list
+                        if (!pduS.contains(pdu)) pduS.add(pdu);
+                    }
+
+                    //Já recebemos os pacotes todos por isso podemos montar o request
+                    if(pdu.getTotal_fragments() == pduS.size()) {
+
+                        byte[] start = new byte[0];
+
+                        for (Iterator<PDU> it = pduS.iterator(); it.hasNext(); ) {
+                            PDU p = it.next();
+                            byte[] newb = p.getData();
+                            start = addAll(start,newb);
+                        }
+
+                        Request r = (Request)deserialize(start);
+
+                        System.out.println("> UDPListener: Converting packet to Request");
+                        if (r.getStatus(secretKey).equals("na")) {
+                            requests.add(r);
+                            System.out.println("> UDPListener: Request added to queue");
+                        } else if (r.getStatus(secretKey).equals("sd")){
+                            replies.add(r);
+                            System.out.println("> UDPListener: Reply added to queue");
+                        }
+
+                    }
+
+                }
+                */
 
 
                 //Ainda temos que mudar isto. Temos que ir buscar os pdus ao map quando eles já estiveram lá todos para converter para Request
@@ -80,6 +121,7 @@ public class NodeUDPListener implements Runnable{
                     replies.add(r);
                     System.out.println("> UDPListener: Reply added to queue");
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
