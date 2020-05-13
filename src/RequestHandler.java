@@ -31,7 +31,10 @@ public class RequestHandler implements Runnable{
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream os = new ObjectOutputStream(out);
         os.writeObject(obj);
-        return out.toByteArray();
+        os.close();
+        byte[] b = out.toByteArray();
+        out.close();
+        return b;
     }
 
     public void run() {
