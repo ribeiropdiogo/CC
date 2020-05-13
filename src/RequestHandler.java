@@ -75,6 +75,7 @@ public class RequestHandler implements Runnable{
                     byte[] pdubuffer = serialize(pdu);
 
                     System.out.println("PDU info:");
+                    System.out.println("PDU size: "+pdubuffer.length);
                     System.out.println("id: "+pdu.getIdentifier(secretKey));
                     System.out.println("control: "+pdu.getControl());
                     System.out.println("fragments: "+pdu.getTotal_fragments());
