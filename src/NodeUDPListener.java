@@ -58,7 +58,9 @@ public class NodeUDPListener implements Runnable{
         if (allFragments(id)){
             SortedSet<PDU> fragments = pduPackets.get(id);
             PDU p = fragments.first();
+            System.out.println("> pdata size "+p.getData().length);
             byte[] buffer = new byte[p.getTotalSize()];
+            System.out.println("> buffer size "+buffer.length);
             System.arraycopy(p.getData(), 0, buffer, 0, p.getData().length);
             int j = 1;
             for (Iterator<PDU> it = fragments.iterator(); it.hasNext(); ) {
@@ -89,9 +91,8 @@ public class NodeUDPListener implements Runnable{
                 pduBuffer = packet.getData();
 
                 //Adiciona pdu ao map
-                System.out.println("> UDPListener: Converting Buffer to PDU - "+pduBuffer.length);
-                PDU pdu = new PDU();
-                pdu = (PDU)deserialize(pduBuffer);
+                System.out.println("> UDPListener: Converting Buffer to PDU");
+                PDU pdu = (PDU)deserialize(pduBuffer);
                 Arrays.fill(pduBuffer, (byte)0);
 
                 System.out.println("> UDPListener: Packet Received");
