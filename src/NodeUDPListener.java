@@ -31,8 +31,11 @@ public class NodeUDPListener implements Runnable{
     }
 
     private static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+        System.out.println("> ---------");
         ByteArrayInputStream in = new ByteArrayInputStream(data);
+        System.out.println("> ---------");
         ObjectInputStream is = new ObjectInputStream(in);
+        System.out.println("> ---------");
         return is.readObject();
     }
 

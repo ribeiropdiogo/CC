@@ -7,7 +7,6 @@ public class PDU implements Serializable {
     private byte[] data;
 
     public PDU(){
-
     }
 
     public String getIdentifier(String secretKey) {
