@@ -9,12 +9,13 @@ public class NodeUDPListener implements Runnable{
     private SortedSet<Request> requests, replies;
     private Set<String> peers;
     private DatagramSocket socket;
+    private int max_data_chunk = 50 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
     private volatile boolean running = true;
     private byte[] buffer = new byte[20*1024];
-    private byte[] requestBuffer = new byte[20*1024];
+    private byte[] pduBuffer = new byte[pdu_size];
     private InetAddress address;
     private Map<String,SortedSet<PDU>> pduPackets; //ainda não está implementado, mas em principio vamos armazenar aqui os pacotes que chegam ao nodo enquando não chegaram todos os seus parceiros
-    private int max_data_chunk = 50 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
+
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
@@ -29,7 +30,7 @@ public class NodeUDPListener implements Runnable{
         }
     }
 
-    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+    private static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
         ByteArrayInputStream in = new ByteArrayInputStream(data);
         ObjectInputStream is = new ObjectInputStream(in);
         return is.readObject();
@@ -41,6 +42,40 @@ public class NodeUDPListener implements Runnable{
         return joinedArray;
     }
 
+    private boolean allFragments(String id){
+        SortedSet<PDU> fragments = pduPackets.get(id);
+        PDU p = fragments.first();
+        int total = p.getTotal_fragments();
+        if (fragments.size() == total)
+            return true;
+        else return false;
+    }
+
+    private void assembler(String id) throws IOException, ClassNotFoundException {
+        if (allFragments(id)){
+            SortedSet<PDU> fragments = pduPackets.get(id);
+            PDU p = fragments.first();
+            byte[] buffer = new byte[p.getTotalSize()];
+            System.arraycopy(p.getData(), 0, buffer, 0, p.getData().length);
+            int j = 1;
+            for (Iterator<PDU> it = fragments.iterator(); it.hasNext(); ) {
+                PDU n = it.next();
+                System.arraycopy(n.getData(), 0, buffer, j*max_data_chunk, n.getData().length);
+            }
+
+            Request r = (Request)deserialize(buffer);
+
+            System.out.println("> UDPListener: Converting packet to Request");
+            if (r.getStatus(secretKey).equals("na")) {
+                requests.add(r);
+                System.out.println("> UDPListener: Request added to queue");
+            } else if (r.getStatus(secretKey).equals("sd")){
+                replies.add(r);
+                System.out.println("> UDPListener: Reply added to queue");
+            }
+        }
+    }
+
     public void run() {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         while (running) {
@@ -48,88 +83,29 @@ public class NodeUDPListener implements Runnable{
                 // receber pacotes udp
                 socket.receive(packet);
                 System.out.println("> UDPListener: Receiving packet");
-                requestBuffer = packet.getData();
+                pduBuffer = packet.getData();
 
-
-                //O QUE EU FIZ - DESCOMENTA ISTO PARA VER O QUE EU FIZ E COMENTA A PARTE QUE ESTAVA ANTES
-
-                /*
                 //Adiciona pdu ao map
                 System.out.println("> UDPListener: Converting Buffer to PDU");
                 PDU pdu = new PDU();
-                pdu = (PDU)deserialize(requestBuffer);
-                Arrays.fill(requestBuffer, (byte)0);
+                pdu = (PDU)deserialize(pduBuffer);
+                Arrays.fill(pduBuffer, (byte)0);
+
                 System.out.println("> UDPListener: Packet Received");
 
-                //Verifica se é um PDU de controlo
-                if(pdu.getControl() == 1) {
-
-                    //Se sim, temos que inicializar o RequestHandler e enviar o pacote que falta;
-                    System.out.println("> UDPListener: Error Control Packet Received");
-
+                if (this.pduPackets.containsKey(pdu.getIdentifier(secretKey))){
+                    SortedSet<PDU> fragments = pduPackets.get(pdu.getIdentifier(secretKey));
+                    if (!fragments.contains(pdu))
+                        fragments.add(pdu);
+                    pduPackets.put(pdu.getIdentifier(secretKey),fragments);
                 } else {
-
-                    SortedSet<PDU> pduS = pduPackets.get(pdu.getIdentifier(secretKey));
-
-                    // if sorted set does not exist create it
-                    if(pduS == null) {
-                        Comparator comparator = new PDUComparator();
-                        pduS = new TreeSet<>(comparator); // Eu fiz em forma de SortedSet, mas ainda temos que fazer um comparador decente
-                        pduS.add(pdu);
-                        pduPackets.put(pdu.getIdentifier(secretKey),pduS);
-                    } else {
-                        //add pdu if its not in list
-                        if (!pduS.contains(pdu)) pduS.add(pdu);
-                    }
-
-                    //Já recebemos os pacotes todos por isso podemos montar o request
-                    if(pdu.getTotal_fragments() == pduS.size()) {
-
-                        byte[] start = new byte[0];
-
-                        for (Iterator<PDU> it = pduS.iterator(); it.hasNext(); ) {
-                            PDU p = it.next();
-                            byte[] newb = p.getData();
-                            start = addAll(start,newb);
-                        }
-
-                        Request r = (Request)deserialize(start);
-
-                        System.out.println("> UDPListener: Converting packet to Request");
-                        if (r.getStatus(secretKey).equals("na")) {
-                            requests.add(r);
-                            System.out.println("> UDPListener: Request added to queue");
-                        } else if (r.getStatus(secretKey).equals("sd")){
-                            replies.add(r);
-                            System.out.println("> UDPListener: Reply added to queue");
-                        }
-
-                    }
-
+                    Comparator comparator = new PDUComparator();
+                    SortedSet<PDU> fragments = new TreeSet<>(comparator);
+                    fragments.add(pdu);
+                    pduPackets.put(pdu.getIdentifier(secretKey),fragments);
                 }
-                */
 
-
-                //Ainda temos que mudar isto. Temos que ir buscar os pdus ao map quando eles já estiveram lá todos para converter para Request
-
-
-
-                // COMO ESTAVA ANTES - COMENTA ISTO PARA VERES COMO EU FIZ
-
-                ///*
-                System.out.println("> UDPListener: Packet Received");
-                // colocar esses pacotes udp na fila de espera
-                Request r = (Request)deserialize(requestBuffer);
-                Arrays.fill(requestBuffer, (byte)0);
-                System.out.println("> UDPListener: Converting packet to Request");
-                if (r.getStatus(secretKey).equals("na")) {
-                    requests.add(r);
-                    System.out.println("> UDPListener: Request added to queue");
-                } else if (r.getStatus(secretKey).equals("sd")){
-                    replies.add(r);
-                    System.out.println("> UDPListener: Reply added to queue");
-                }
-                //*/
+                assembler(pdu.getIdentifier(secretKey));
 
             } catch (Exception e) {
                 e.printStackTrace();

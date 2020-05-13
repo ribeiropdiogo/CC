@@ -3,7 +3,7 @@ import java.io.Serializable;
 public class PDU implements Serializable {
 
     private String identifier;
-    private int position, control, total_fragments, last;
+    private int position, control, total_fragments, totalSize;
     private byte[] data;
 
     public PDU(){
@@ -42,12 +42,12 @@ public class PDU implements Serializable {
         this.control = control;
     }
 
-    public int getLast() {
-        return this.last;
+    public int getTotalSize() {
+        return this.totalSize;
     }
 
-    public void setLast(int last) {
-        this.last = last;
+    public void setTotalSize(int totalSize) {
+        this.totalSize = totalSize;
     }
 
     public byte[] getData() {

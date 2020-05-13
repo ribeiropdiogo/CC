@@ -41,7 +41,7 @@ public class RequestHandler implements Runnable{
                 String identifier = nodeadress + " " + requestnumber;
                 //Converter Request em Bytes
                 byte[] buffer = serialize(request);
-
+                int real_length = buffer.length;
                 InetAddress address = null;
                 address = InetAddress.getByName(peer);
 
@@ -56,6 +56,7 @@ public class RequestHandler implements Runnable{
                     pdu.setControl(0);
                     pdu.setPosition(j+1);
                     pdu.setTotal_fragments(i);
+                    pdu.setTotalSize(real_length);
                     byte[] aux = new byte[max_data_chunk];
                     int tam = 0;
 

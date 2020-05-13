@@ -6,7 +6,7 @@ public class PDUComparator implements Comparator<PDU> {
         // for comparison
         if(pdu1.getPosition()==pdu2.getPosition()) {
             return 0;
-        } else if(pdu1.getPosition()>pdu2.getPosition()) {
+        } else if(pdu1.getPosition()<pdu2.getPosition()) {
             return -1;
         } else {
             return 1;
