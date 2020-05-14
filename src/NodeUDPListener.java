@@ -19,12 +19,13 @@ public class NodeUDPListener implements Runnable{
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
-    public NodeUDPListener(DatagramSocket socket, SortedSet<Request> r, SortedSet<Request> rep) {
+    public NodeUDPListener(DatagramSocket socket, SortedSet<Request> r, SortedSet<Request> rep, Set<String> ps) {
         try {
             this.socket = socket;
             this.requests = r;
             this.replies = rep;
             this.pduPackets = new HashMap<>();
+            this.peers = ps;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,6 +83,13 @@ public class NodeUDPListener implements Runnable{
         }
     }
 
+    private boolean validOrigin(String s){
+        String[] ip = s.split("\\s+");
+        if (peers.contains(ip[0]))
+            return true;
+        else return false;
+    }
+
     public void run() {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         while (running) {
@@ -91,27 +99,29 @@ public class NodeUDPListener implements Runnable{
                 System.out.println("> UDPListener: Receiving packet");
                 pduBuffer = packet.getData();
 
-                //Adiciona pdu ao map
                 System.out.println("> UDPListener: Converting Buffer to PDU");
-                PDU pdu = (PDU)deserialize(pduBuffer);
-                Arrays.fill(pduBuffer, (byte)0);
+                PDU pdu = (PDU) deserialize(pduBuffer);
+                Arrays.fill(pduBuffer, (byte) 0);
 
-                System.out.println("> UDPListener: Packet Received");
+                if (validOrigin(pdu.getIdentifier(secretKey))) {
+                    System.out.println("> UDPListener: Packet Received");
 
-                if (this.pduPackets.containsKey(pdu.getIdentifier(secretKey))){
-                    SortedSet<PDU> fragments = pduPackets.get(pdu.getIdentifier(secretKey));
-                    if (!fragments.contains(pdu))
+                    if (this.pduPackets.containsKey(pdu.getIdentifier(secretKey))) {
+                        SortedSet<PDU> fragments = pduPackets.get(pdu.getIdentifier(secretKey));
+                        if (!fragments.contains(pdu))
+                            fragments.add(pdu);
+                        pduPackets.put(pdu.getIdentifier(secretKey), fragments);
+                    } else {
+                        Comparator comparator = new PDUComparator();
+                        SortedSet<PDU> fragments = new TreeSet<>(comparator);
                         fragments.add(pdu);
-                    pduPackets.put(pdu.getIdentifier(secretKey),fragments);
+                        pduPackets.put(pdu.getIdentifier(secretKey), fragments);
+                    }
+
+                    assembler(pdu.getIdentifier(secretKey));
                 } else {
-                    Comparator comparator = new PDUComparator();
-                    SortedSet<PDU> fragments = new TreeSet<>(comparator);
-                    fragments.add(pdu);
-                    pduPackets.put(pdu.getIdentifier(secretKey),fragments);
+                    System.out.println("> UDPListener: Packet from unknown source");
                 }
-
-                assembler(pdu.getIdentifier(secretKey));
-
             } catch (Exception e) {
                 e.printStackTrace();
             }

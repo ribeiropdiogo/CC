@@ -154,7 +154,7 @@ public class Node {
         Thread ulistener = new Thread(){
             public void run(){
                 try {
-                    NodeUDPListener nul = new NodeUDPListener(internal_socket,requests,replies);
+                    NodeUDPListener nul = new NodeUDPListener(internal_socket,requests,replies,peers);
                     new Thread(nul).start();
                 } catch (Exception e) {
                     e.printStackTrace();
