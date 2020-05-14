@@ -3,7 +3,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Comparator;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class RequestHandler implements Runnable{
     private DatagramSocket internal_socket;
@@ -11,7 +13,7 @@ public class RequestHandler implements Runnable{
     private Request request;
     private int protected_port;
     private volatile boolean running = true;
-    //private SortedSet<PDU> storage;
+    private SortedSet<PDU> fragments;
     private int max_data_chunk = 10 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
 
     final String secretKey = "HelpMeObiWanKenobi!";
@@ -50,6 +52,11 @@ public class RequestHandler implements Runnable{
         return o;
     }
 
+    private void controlFlow(){
+        Comparator comparator = new PDUComparator();
+        fragments = new TreeSet<>(comparator);
+    }
+
     public void run() {
         while (running) {
             System.out.println("> Launched RequestHandler");
@@ -60,12 +67,14 @@ public class RequestHandler implements Runnable{
                 int real_length = buffer.length;
                 InetAddress address = null;
                 address = InetAddress.getByName(peer);
+                controlFlow();
 
                 //pegar em pedaços do buffer e criar PDU's
                 float f = ((float)buffer.length/(float)max_data_chunk);
                 int i = (int)Math.ceil(f);
 
                 //System.out.println(">: "+i+" "+buffer.length+" "+max_data_chunk+" | "+f+" | "+Math.ceil(f));
+
 
                 for (int j = 0;j < i;j++){
                     PDU pdu = new PDU();
@@ -85,8 +94,9 @@ public class RequestHandler implements Runnable{
                     System.arraycopy(buffer, j*max_data_chunk, aux, 0, tam);
                     pdu.setData(aux);
 
-                    //Adicionar pdu ao armazem no caso de falhar algum pacote
-                    //storage.add(pdu);
+
+                    fragments.add(pdu);
+
                     //Pdu para bytes
                     byte[] pdubuffer = serialize(pdu);
 
@@ -98,9 +108,8 @@ public class RequestHandler implements Runnable{
                     System.out.println("position: "+pdu.getPosition());
                     System.out.println("datasize: "+pdu.getData().length);
 
-
                     //Enviar o PDU
-                    DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
+                    DatagramPacket packet = new DatagramPacket(pdubuffer, pdu_size, address, this.protected_port);
                     internal_socket.send(packet);
                 }
 

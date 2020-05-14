@@ -57,10 +57,9 @@ public class NodeUDPListener implements Runnable{
     private void assembler(String id) throws IOException, ClassNotFoundException {
         if (allFragments(id)){
             SortedSet<PDU> fragments = pduPackets.get(id);
-            PDU p = fragments.first();
-            System.out.println("> pdata size "+p.getData().length);
-            byte[] buffer = new byte[p.getData().length];
-            System.out.println("> buffer size "+buffer.length);
+
+            byte[] buffer = new byte[max_data_chunk];
+
             int j = 0;
             for (Iterator<PDU> it = fragments.iterator(); it.hasNext(); ) {
                 PDU n = it.next();
