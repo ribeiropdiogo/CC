@@ -109,7 +109,7 @@ public class RequestHandler implements Runnable{
                     System.out.println("datasize: "+pdu.getData().length);
 
                     //Enviar o PDU
-                    DatagramPacket packet = new DatagramPacket(pdubuffer, pdu_size, address, this.protected_port);
+                    DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
                     internal_socket.send(packet);
                 }
 
