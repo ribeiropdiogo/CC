@@ -12,17 +12,16 @@ public class RequestHandler implements Runnable{
     private volatile boolean running = true;
     private SortedSet<PDU> fragments;
     private int max_data_chunk = 10 * 10, requestnumber, pdu_size = max_data_chunk + 256;
-    private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size];
+    private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size], buffer = new byte[pdu_size], pduBuffer = new byte[pdu_size];
 
     private int control_port = 8989;
     private DatagramSocket control_socket;
     private  Map<Integer,byte[]> pdufragments;
 
     //controlo de pacotes
-    private int protected_control_port = 8888;
-    private DatagramSocket internal_control_socket;
-    private byte[] buffer = new byte[pdu_size];
-    private byte[] pduBuffer = new byte[pdu_size];
+    //private int protected_control_port = 8888;
+    //private DatagramSocket internal_control_socket;
+    //private byte[] pduBuffer = new byte[pdu_size];
     //fim
 
     final String secretKey = "HelpMeObiWanKenobi!";
@@ -67,11 +66,11 @@ public class RequestHandler implements Runnable{
         return o;
     }
 
+    /*
     private void controlFlow(){
         Comparator comparator = new PDUComparator();
         fragments = new TreeSet<>(comparator);
     }
-
     private int controlPacketReceiver(int[] positionsr) {
         try {
             internal_control_socket = new DatagramSocket(protected_control_port);
@@ -117,7 +116,6 @@ public class RequestHandler implements Runnable{
 
         return 0;
     }
-
     private int controlPacketSender(String identifier,InetAddress address) throws IOException {
         try {
             PDU pdu = new PDU();
@@ -144,7 +142,6 @@ public class RequestHandler implements Runnable{
 
         return 0;
     }
-
     private int repeatPacketSender(String identifier,InetAddress address, int[] positionv) throws IOException {
         try {
 
@@ -170,6 +167,7 @@ public class RequestHandler implements Runnable{
 
         return 0;
     }
+    */
 
     private void sendFragment(String identifier, int j, int i, int real_length, InetAddress address) throws IOException {
         PDU pdu = new PDU();
@@ -235,8 +233,8 @@ public class RequestHandler implements Runnable{
                 while (!end){
                     control_socket.receive(packet);
                     pduBuffer = packet.getData();
-                    pduBuffer = packet.getData();
                     PDU pdu = (PDU) deserialize(pduBuffer);
+                    Arrays.fill(pduBuffer, (byte) 0);
                     if (pdu.getIdentifier(secretKey).equals(identifier)){
                         String msg = pdu.getData().toString();
                         if (msg.equals("success")){
