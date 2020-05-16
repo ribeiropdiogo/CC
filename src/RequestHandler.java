@@ -208,11 +208,6 @@ public class RequestHandler implements Runnable{
 
     public void run() {
         while (running) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             System.out.println("> Launched RequestHandler");
             try {
                 String identifier = nodeadress + " " + requestnumber;
@@ -232,7 +227,7 @@ public class RequestHandler implements Runnable{
                 }
 
                 boolean end = false;
-
+                /*
                 DatagramPacket packet = new DatagramPacket(controlbuffer, controlbuffer.length);
                 while (!end){
                     control_socket.receive(packet);
@@ -250,7 +245,7 @@ public class RequestHandler implements Runnable{
                             System.out.println("> RequestHandler: Resending fragment " + fragment);
                         }
                     }
-                }
+                }*/
 
                 // 1º ESPERAMOS UNS SEGUNDOS
 
