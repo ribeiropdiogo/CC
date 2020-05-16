@@ -108,8 +108,9 @@ public class NodeUDPListener implements Runnable{
 
                     if (this.pduPackets.containsKey(pdu.getIdentifier(secretKey))) {
                         SortedSet<PDU> fragments = pduPackets.get(pdu.getIdentifier(secretKey));
-                        if (!fragments.contains(pdu))
+                        if (!fragments.contains(pdu)) {
                             fragments.add(pdu);
+                        }
                         pduPackets.put(pdu.getIdentifier(secretKey), fragments);
                     } else {
                         Comparator comparator = new PDUComparator();

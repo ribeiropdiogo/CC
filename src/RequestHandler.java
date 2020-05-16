@@ -12,6 +12,7 @@ public class RequestHandler implements Runnable{
     private String peer, nodeadress;
     private Request request;
     private int protected_port;
+    private int protected_control_port = 8888;
     private volatile boolean running = true;
     private SortedSet<PDU> fragments;
     private int max_data_chunk = 10 * 1, requestnumber, pdu_size = max_data_chunk + 256;
