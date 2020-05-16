@@ -111,38 +111,53 @@ public class RequestHandler implements Runnable{
     }
 
     private int controlPacketSender(String identifier,InetAddress address) throws IOException {
-        PDU pdu = new PDU();
-        pdu.setIdentifier(identifier,secretKey);
-        pdu.setControl(1);
-        pdu.setPosition(0);
-        pdu.setTotal_fragments(0);
-        pdu.setTotalSize(0);
-        byte[] aux = new byte[0];
-        pdu.setData(aux);
+        try {
+            PDU pdu = new PDU();
+            pdu.setIdentifier(identifier,secretKey);
+            pdu.setControl(1);
+            pdu.setPosition(0);
+            pdu.setTotal_fragments(0);
+            pdu.setTotalSize(0);
+            byte[] aux = new byte[0];
+            pdu.setData(aux);
 
-        //Pdu para bytes
-        byte[] pdubuffer = serialize(pdu);
+            //Pdu para bytes
+            byte[] pdubuffer = serialize(pdu);
 
-        //Enviar o PDU
-        DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
-        internal_socket.send(packet);
+            //Enviar o PDU
+            DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
+            internal_socket.send(packet);
+
+            return 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return 0;
     }
 
     private int repeatPacketSender(String identifier,InetAddress address, int[] positionv) throws IOException {
-        for (Iterator<PDU> it = fragments.iterator(); it.hasNext(); ) {
-            PDU n = it.next();
-            for(int i = 0; i < positionv.length; i++) {
-                if(n.getPosition() == positionv[i]) {
-                    //Pdu para bytes
-                    byte[] pdubuffer = serialize(n);
+        try {
 
-                    //Enviar o PDU
-                    DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
-                    internal_socket.send(packet);
+            for (Iterator<PDU> it = fragments.iterator(); it.hasNext(); ) {
+                PDU n = it.next();
+                for(int i = 0; i < positionv.length; i++) {
+                    if(n.getPosition() == positionv[i]) {
+                        //Pdu para bytes
+                        byte[] pdubuffer = serialize(n);
+
+                        //Enviar o PDU
+                        DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
+                        internal_socket.send(packet);
+                    }
                 }
             }
+
+            return 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return 0;
