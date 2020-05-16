@@ -90,11 +90,9 @@ public class NodeTCPSpeaker implements Runnable {
                         external_socket_out.close();
 
                         //enviar o request via udp de volta
-                        InetAddress ip;
-                        ip = InetAddress.getLocalHost();
-                        System.out.println(ip);
+                        String ip = InetAddress.getLocalHost().getHostAddress();
                         i++;
-                        startRequestHandler(this.UDPsocket,r,i,external_socket_out.getInetAddress().getHostAddress());
+                        startRequestHandler(this.UDPsocket,r,i,ip);
 
                         //remover o request da fila de espera deste nodo
                         requests.remove(r);
