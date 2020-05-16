@@ -3,6 +3,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -18,7 +19,7 @@ public class RequestHandler implements Runnable{
 
     //controlo de pacotes
     private int protected_control_port = 8888;
-    private int internal_control_socket;
+    private DatagramSocket internal_control_socket;
     private byte[] buffer = new byte[pdu_size];
     private byte[] pduBuffer = new byte[pdu_size];
     //fim
@@ -64,21 +65,41 @@ public class RequestHandler implements Runnable{
         fragments = new TreeSet<>(comparator);
     }
 
-    /*
-    private boolean controlPacketReceiver() {
-        internal_control_socket = new DatagramSocket(protected_control_pocket);
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-        // receber pacotes udp
-        internal_control_socket.receive(packet);
-        System.out.println("> RequestHandler: Receiving control packet");
-        pduBuffer = packet.getData();
-        System.out.println("> UDPListener: Converting Buffer to PDU");
-        PDU pdu = (PDU) deserialize(pduBuffer);
-        Arrays.fill(pduBuffer, (byte) 0);
-    }
-     */
 
-    /*
+    private boolean controlPacketReceiver() {
+        try {
+            internal_control_socket = new DatagramSocket(protected_control_port);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            // receber pacotes udp
+            internal_control_socket.receive(packet);
+            System.out.println("> RequestHandler: Receiving control packet");
+            pduBuffer = packet.getData();
+            System.out.println("> UDPListener: Converting Buffer to PDU");
+            PDU pdu = (PDU) deserialize(pduBuffer);
+            Arrays.fill(pduBuffer, (byte) 0);
+            byte[] data = pdu.getData();
+            String pos = (String) deserialize(data);
+            int[] posv = new int[pdu.getTotal_fragments()];
+            int j = 0;
+            //tirar as positions da string
+            for(int i = 0; i < pos.length(); i++) {
+                if(pos.charAt(i)!='-') {
+                    posv[j] = pos.charAt(i);
+                    j++;
+                }
+            }
+
+            //imprimir as positions que temos de reenviar
+            System.out.println(posv);
+
+            return false;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
     private void controlPacketSender(String identifier,InetAddress address) throws IOException {
         PDU pdu = new PDU();
         pdu.setIdentifier(identifier,secretKey);
@@ -96,7 +117,6 @@ public class RequestHandler implements Runnable{
         DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
         internal_socket.send(packet);
     }
-    */
 
     public void run() {
         while (running) {
@@ -158,7 +178,7 @@ public class RequestHandler implements Runnable{
                 /*
                 do {
                     controlPacketSender(identifier,address,this.protected_port);
-                } while(!controlPacketReceiver);
+                } while(controlPacketReceiver);
                  */
 
                 System.out.println("> RequestHandler: Sent Request to peer "+address);
