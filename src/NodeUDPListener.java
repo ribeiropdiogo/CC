@@ -106,12 +106,12 @@ public class NodeUDPListener implements Runnable{
         Request r = (Request) deserialize(buffer);
 
         System.out.println("> UDPListener: Converting packet to Request");
+        successMessage(id);
         if (r.getStatus(secretKey).equals("na")) {
             requests.add(r);
             System.out.println("> UDPListener: Request added to queue");
         } else if (r.getStatus(secretKey).equals("sd")) {
             replies.add(r);
-            successMessage(id);
             served.add(id);
             System.out.println("> UDPListener: Reply added to queue");
         }
