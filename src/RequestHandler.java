@@ -234,7 +234,7 @@ public class RequestHandler implements Runnable{
                     PDU pdu = (PDU) deserialize(pduBuffer);
                     Arrays.fill(pduBuffer, (byte) 0);
                     if (pdu.getIdentifier(secretKey).equals(identifier)){
-                        String msg = pdu.getData().toString();
+                        String msg = new String(pdu.getData());
                         if (msg.equals("success")){
                             end = true;
                             System.out.println("> RequestHandler: Received success message ");
