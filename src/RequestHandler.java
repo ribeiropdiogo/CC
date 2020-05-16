@@ -191,9 +191,6 @@ public class RequestHandler implements Runnable{
         System.arraycopy(buffer, j*max_data_chunk, aux, 0, tam);
         pdu.setData(aux);
 
-
-        fragments.add(pdu);
-
         //Pdu para bytes
         byte[] pdubuffer = serialize(pdu);
         pdufragments.put(j+1,pdubuffer);
