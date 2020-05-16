@@ -57,6 +57,14 @@ public class RequestHandler implements Runnable{
         fragments = new TreeSet<>(comparator);
     }
 
+    private void controlPacketReceiver() {
+
+    }
+
+    private void controlPacketSender() {
+
+    }
+
     public void run() {
         while (running) {
             System.out.println("> Launched RequestHandler");
@@ -75,6 +83,7 @@ public class RequestHandler implements Runnable{
 
                 //System.out.println(">: "+i+" "+buffer.length+" "+max_data_chunk+" | "+f+" | "+Math.ceil(f));
 
+                //O meu plano inicial é
 
                 for (int j = 0;j < i;j++){
                     PDU pdu = new PDU();
@@ -112,6 +121,12 @@ public class RequestHandler implements Runnable{
                     DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
                     internal_socket.send(packet);
                 }
+
+
+
+                //do {
+                    controlPacketReceiver();
+                //} while(true);
 
                 System.out.println("> RequestHandler: Sent Request to peer "+address);
                 running = false;
