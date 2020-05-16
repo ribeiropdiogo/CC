@@ -208,6 +208,11 @@ public class RequestHandler implements Runnable{
 
     public void run() {
         while (running) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             System.out.println("> Launched RequestHandler");
             try {
                 String identifier = nodeadress + " " + requestnumber;
