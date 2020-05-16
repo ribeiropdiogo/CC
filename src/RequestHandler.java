@@ -66,7 +66,7 @@ public class RequestHandler implements Runnable{
     }
 
 
-    private boolean controlPacketReceiver() {
+    private boolean controlPacketReceiver(int[] positionsr) {
         try {
             internal_control_socket = new DatagramSocket(protected_control_port);
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -79,18 +79,18 @@ public class RequestHandler implements Runnable{
             Arrays.fill(pduBuffer, (byte) 0);
             byte[] data = pdu.getData();
             String pos = (String) deserialize(data);
-            int[] posv = new int[pdu.getTotal_fragments()];
+            positionsr = new int[pdu.getTotal_fragments()];
             int j = 0;
             //tirar as positions da string
             for(int i = 0; i < pos.length(); i++) {
                 if(pos.charAt(i)!='-') {
-                    posv[j] = pos.charAt(i);
+                    positionsr[j] = pos.charAt(i);
                     j++;
                 }
             }
 
             //imprimir as positions que temos de reenviar
-            System.out.println(posv);
+            System.out.println(positionsr);
 
             return false;
 
@@ -175,11 +175,18 @@ public class RequestHandler implements Runnable{
 
                 // VAMOS ENVIAR O PACOTE DE CONTROLO ENQUANTO NÃO RECEBERMOS RESPOSTA
 
+                int[] positionsr;
+
                 /*
                 do {
                     controlPacketSender(identifier,address,this.protected_port);
-                } while(controlPacketReceiver);
+                } while(controlPacketReceiver(positionsr));
                  */
+
+                
+
+
+
 
                 System.out.println("> RequestHandler: Sent Request to peer "+address);
                 running = false;
