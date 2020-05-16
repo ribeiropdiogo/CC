@@ -12,13 +12,16 @@ public class RequestHandler implements Runnable{
     private String peer, nodeadress;
     private Request request;
     private int protected_port;
-    //controlo de pacotes
-    private int protected_control_port = 8888;
-    private int internal_control_socket;
-    //fim
     private volatile boolean running = true;
     private SortedSet<PDU> fragments;
     private int max_data_chunk = 10 * 1, requestnumber, pdu_size = max_data_chunk + 256;
+
+    //controlo de pacotes
+    private int protected_control_port = 8888;
+    private int internal_control_socket;
+    private byte[] buffer = new byte[pdu_size];
+    private byte[] pduBuffer = new byte[pdu_size];
+    //fim
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
@@ -64,6 +67,14 @@ public class RequestHandler implements Runnable{
     /*
     private boolean controlPacketReceiver() {
         internal_control_socket = new DatagramSocket(protected_control_pocket);
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        // receber pacotes udp
+        internal_control_socket.receive(packet);
+        System.out.println("> RequestHandler: Receiving control packet");
+        pduBuffer = packet.getData();
+        System.out.println("> UDPListener: Converting Buffer to PDU");
+        PDU pdu = (PDU) deserialize(pduBuffer);
+        Arrays.fill(pduBuffer, (byte) 0);
     }
      */
 
