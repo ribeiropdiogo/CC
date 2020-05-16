@@ -79,7 +79,7 @@ public class NodeUDPListener implements Runnable{
         byte[] pdubuffer = serialize(pdu);
         String[] ip = identifier.split("\\s+");
         int port = 10000 + Integer.parseInt(ip[1]);
-
+        InetAddress address = InetAddress.getByName(ip[0]);
         this.control_socket = new DatagramSocket(port);
         DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, port);
         control_socket.send(packet);
