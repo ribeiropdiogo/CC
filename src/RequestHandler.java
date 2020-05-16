@@ -3,10 +3,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public class RequestHandler implements Runnable{
     private DatagramSocket internal_socket;
@@ -66,7 +63,7 @@ public class RequestHandler implements Runnable{
     }
 
 
-    private boolean controlPacketReceiver(int[] positionsr) {
+    private void controlPacketReceiver(int[] positionsr, int controld) {
         try {
             internal_control_socket = new DatagramSocket(protected_control_port);
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -74,30 +71,37 @@ public class RequestHandler implements Runnable{
             internal_control_socket.receive(packet);
             System.out.println("> RequestHandler: Receiving control packet");
             pduBuffer = packet.getData();
-            System.out.println("> UDPListener: Converting Buffer to PDU");
+            System.out.println("> RequestHandler: Converting Buffer to PDU");
             PDU pdu = (PDU) deserialize(pduBuffer);
-            Arrays.fill(pduBuffer, (byte) 0);
-            byte[] data = pdu.getData();
-            String pos = (String) deserialize(data);
-            positionsr = new int[pdu.getTotal_fragments()];
-            int j = 0;
-            //tirar as positions da string
-            for(int i = 0; i < pos.length(); i++) {
-                if(pos.charAt(i)!='-') {
-                    positionsr[j] = pos.charAt(i);
-                    j++;
+
+            //Se recebermos um pacote com control == 2, então
+
+            if(pdu.getControl()==2) {
+
+                controld = 2;
+
+            } else {
+
+                Arrays.fill(pduBuffer, (byte) 0);
+                byte[] data = pdu.getData();
+                String pos = (String) deserialize(data);
+                positionsr = new int[pdu.getTotal_fragments()];
+                int j = 0;
+                //tirar as positions da string
+                for(int i = 0; i < pos.length(); i++) {
+                    if(pos.charAt(i)!='-') {
+                        positionsr[j] = pos.charAt(i);
+                        j++;
+                    }
                 }
+
+                //imprimir as positions que temos de reenviar
+                System.out.println(positionsr);
+
             }
-
-            //imprimir as positions que temos de reenviar
-            System.out.println(positionsr);
-
-            return false;
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
     }
 
     private void controlPacketSender(String identifier,InetAddress address) throws IOException {
@@ -116,6 +120,23 @@ public class RequestHandler implements Runnable{
         //Enviar o PDU
         DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
         internal_socket.send(packet);
+    }
+
+    private void repeatPacketSender(String identifier,InetAddress address, int[] positionv) throws IOException {
+
+        for (Iterator<PDU> it = fragments.iterator(); it.hasNext(); ) {
+            PDU n = it.next();
+            for(int i = 0; i < positionv.length; i++) {
+                if(n.getPosition() == positionv[i]) {
+                    //Pdu para bytes
+                    byte[] pdubuffer = serialize(n);
+
+                    //Enviar o PDU
+                    DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
+                    internal_socket.send(packet);
+                }
+            }
+        }
     }
 
     public void run() {
@@ -175,15 +196,21 @@ public class RequestHandler implements Runnable{
 
                 // VAMOS ENVIAR O PACOTE DE CONTROLO ENQUANTO NÃO RECEBERMOS RESPOSTA
 
-                int[] positionsr;
-
                 /*
-                do {
-                    controlPacketSender(identifier,address,this.protected_port);
-                } while(controlPacketReceiver(positionsr));
-                 */
+                int[] positionsr = null;
+                int controld = 0;
 
-                
+                do {
+                    if(controld == 1) {
+                        repeatPacketSender(identifier,address,positionsr);
+                    } else {
+                        controlPacketSender(identifier, address);
+                    }
+                    controlPacketReceiver(positionsr,controld);
+                } while(controld!=2);
+
+                */
+
 
 
 
