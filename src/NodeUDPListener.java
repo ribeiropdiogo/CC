@@ -125,6 +125,28 @@ public class NodeUDPListener implements Runnable{
         }
     }
 
+    private void sendOkControlPackages(String id){
+        try {
+            PDU pdu = new PDU();
+            pdu.setIdentifier(id,secretKey);
+            pdu.setControl(2);
+            pdu.setPosition(0);
+            pdu.setTotal_fragments(0);
+            pdu.setTotalSize(0);
+            byte[] aux = new byte[0];
+
+
+            byte[] pdubuffer = serialize(pdu);
+
+            internal_control_socket = new DatagramSocket(protected_control_port);
+            DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_control_port);
+            internal_control_socket.send(packet);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private boolean allFragments(String id){
         SortedSet<PDU> fragments = pduPackets.get(id);
         PDU p = fragments.first();
@@ -136,6 +158,8 @@ public class NodeUDPListener implements Runnable{
 
     private void assembler(String id) throws IOException, ClassNotFoundException {
         if (allFragments(id)) {
+            //sendOkControlPackage(id);
+
             SortedSet<PDU> fragments = pduPackets.get(id);
 
             //Alocar um buffer para colocat todos os pdus

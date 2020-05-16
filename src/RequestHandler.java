@@ -218,7 +218,9 @@ public class RequestHandler implements Runnable{
                     internal_socket.send(packet);
                 }
 
-                // VAMOS ENVIAR O PACOTE DE CONTROLO ENQUANTO NÃO RECEBERMOS RESPOSTA
+                // 1º ESPERAMOS UNS SEGUNDOS
+
+                // DEPOIS ESTAMOS SEMPRE A ENVIAR A MENSAGEM DE CONTROLO ENQUANTO NAO RECEBERMOS UM PEDIDO DE PACOTES OU UM PACOTE COM CONTROL == 2 A CONFIRMAR QUE ESTA TUDO PRONTO
 
 
                 /*
