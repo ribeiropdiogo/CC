@@ -18,7 +18,7 @@ public class NodeUDPListener implements Runnable{
     private Map<String,SortedSet<PDU>> pduPackets;
     private Set<String> suspects, served;
     private DatagramSocket control_socket;
-    private int control_port = 8989;
+    private int control_port = 8888;
 
     //controlo de pacotes
     private int protected_control_port = 8888;
