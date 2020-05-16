@@ -244,9 +244,11 @@ public class RequestHandler implements Runnable{
                         String msg = pdu.getData().toString();
                         if (msg.equals("success")){
                             end = true;
+                            System.out.println("> RequestHandler: Received success message ");
                         } else {
                             int fragment = Integer.parseInt(pdu.getData().toString());
                             sendFragment(identifier,fragment,i,real_length,address);
+                            System.out.println("> RequestHandler: Resending fragment " + fragment);
                         }
                     }
                 }
