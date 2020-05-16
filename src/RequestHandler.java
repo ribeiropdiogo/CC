@@ -1,8 +1,6 @@
 import java.io.*;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -14,6 +12,11 @@ public class RequestHandler implements Runnable{
     private volatile boolean running = true;
     private SortedSet<PDU> fragments;
     private int max_data_chunk = 10 * 1, requestnumber, pdu_size = max_data_chunk + 256;
+    private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size];
+
+    private int control_port = 8989;
+    private DatagramSocket control_socket;
+    private  Map<Integer,byte[]> pdufragments;
 
     //controlo de pacotes
     private int protected_control_port = 8888;
@@ -31,6 +34,12 @@ public class RequestHandler implements Runnable{
         this.protected_port = port;
         this.nodeadress = node;
         this.requestnumber = requestn;
+        this.pdufragments = new HashMap<>();
+        try {
+            this.control_socket = new DatagramSocket(control_port);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
     }
 
     public static byte[] serialize(Object obj) throws IOException {
@@ -62,7 +71,6 @@ public class RequestHandler implements Runnable{
         Comparator comparator = new PDUComparator();
         fragments = new TreeSet<>(comparator);
     }
-
 
     private int controlPacketReceiver(int[] positionsr) {
         try {
@@ -163,6 +171,46 @@ public class RequestHandler implements Runnable{
         return 0;
     }
 
+    private void sendFragment(String identifier, int j, int i, int real_length, InetAddress address) throws IOException {
+        PDU pdu = new PDU();
+        pdu.setIdentifier(identifier,secretKey);
+        pdu.setControl(0);
+        pdu.setPosition(j+1);
+        pdu.setTotal_fragments(i);
+        pdu.setTotalSize(real_length);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        pdu.setTimestamp(timestamp.getTime());
+        byte[] aux = new byte[max_data_chunk];
+        int tam = 0;
+
+        int remain = buffer.length - j*max_data_chunk;
+        if (remain < max_data_chunk)
+            tam = remain;
+        else  tam = max_data_chunk;
+
+        System.arraycopy(buffer, j*max_data_chunk, aux, 0, tam);
+        pdu.setData(aux);
+
+
+        fragments.add(pdu);
+
+        //Pdu para bytes
+        byte[] pdubuffer = serialize(pdu);
+        pdufragments.put(j+1,pdubuffer);
+
+        System.out.println("PDU info:");
+        System.out.println("PDU size: "+pdubuffer.length);
+        System.out.println("id: "+pdu.getIdentifier(secretKey));
+        System.out.println("control: "+pdu.getControl());
+        System.out.println("fragments: "+pdu.getTotal_fragments());
+        System.out.println("position: "+pdu.getPosition());
+        System.out.println("datasize: "+pdu.getData().length);
+
+        //Enviar o PDU
+        DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
+        internal_socket.send(packet);
+    }
+
     public void run() {
         while (running) {
             System.out.println("> Launched RequestHandler");
@@ -173,7 +221,7 @@ public class RequestHandler implements Runnable{
                 int real_length = buffer.length;
                 InetAddress address = null;
                 address = InetAddress.getByName(peer);
-                controlFlow();
+                //controlFlow();
 
                 //pegar em pedaços do buffer e criar PDU's
                 float f = ((float)buffer.length/(float)max_data_chunk);
@@ -182,40 +230,25 @@ public class RequestHandler implements Runnable{
                 //System.out.println(">: "+i+" "+buffer.length+" "+max_data_chunk+" | "+f+" | "+Math.ceil(f));
 
                 for (int j = 0;j < i;j++){
-                    PDU pdu = new PDU();
-                    pdu.setIdentifier(identifier,secretKey);
-                    pdu.setControl(0);
-                    pdu.setPosition(j+1);
-                    pdu.setTotal_fragments(i);
-                    pdu.setTotalSize(real_length);
-                    byte[] aux = new byte[max_data_chunk];
-                    int tam = 0;
+                    sendFragment(identifier,j,i,real_length,address);
+                }
 
-                    int remain = buffer.length - j*max_data_chunk;
-                    if (remain < max_data_chunk)
-                        tam = remain;
-                    else  tam = max_data_chunk;
-
-                    System.arraycopy(buffer, j*max_data_chunk, aux, 0, tam);
-                    pdu.setData(aux);
-
-
-                    fragments.add(pdu);
-
-                    //Pdu para bytes
-                    byte[] pdubuffer = serialize(pdu);
-
-                    System.out.println("PDU info:");
-                    System.out.println("PDU size: "+pdubuffer.length);
-                    System.out.println("id: "+pdu.getIdentifier(secretKey));
-                    System.out.println("control: "+pdu.getControl());
-                    System.out.println("fragments: "+pdu.getTotal_fragments());
-                    System.out.println("position: "+pdu.getPosition());
-                    System.out.println("datasize: "+pdu.getData().length);
-
-                    //Enviar o PDU
-                    DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
-                    internal_socket.send(packet);
+                boolean end = false;
+                DatagramPacket packet = new DatagramPacket(controlbuffer, controlbuffer.length);
+                while (!end){
+                    control_socket.receive(packet);
+                    pduBuffer = packet.getData();
+                    pduBuffer = packet.getData();
+                    PDU pdu = (PDU) deserialize(pduBuffer);
+                    if (pdu.getIdentifier(secretKey).equals(identifier)){
+                        String msg = pdu.getData().toString();
+                        if (msg.equals("success")){
+                            end = true;
+                        } else {
+                            int fragment = Integer.parseInt(pdu.getData().toString());
+                            sendFragment(identifier,fragment,i,real_length,address);
+                        }
+                    }
                 }
 
                 // 1º ESPERAMOS UNS SEGUNDOS
@@ -227,8 +260,6 @@ public class RequestHandler implements Runnable{
                 // CONTROL PACKET SENDER MANDA UM PACOTE DE CONTROLO A PERGUNTAR SE ESTA TUDO BEM
 
                 // CONTROLPACKETRECEIVER ESTA SEMPRE A LER OS PACOTES QUE ESTAO A CHEGAR ATE FICARMOS COM CONTROLD == 2
-
-
                 /*
                 TimeUnit.SECONDS.sleep(2);
 
@@ -245,10 +276,6 @@ public class RequestHandler implements Runnable{
                 } while(controld!=2);
 
                 */
-
-
-
-
 
                 System.out.println("> RequestHandler: Sent Request to peer "+address);
                 running = false;

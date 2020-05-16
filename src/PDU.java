@@ -5,6 +5,7 @@ public class PDU implements Serializable {
     private String identifier;
     private int position, control, total_fragments, totalSize;
     private byte[] data;
+    private long timestamp;
 
     public PDU(){
     }
@@ -57,4 +58,11 @@ public class PDU implements Serializable {
         this.data = data;
     }
 
+    public long getTimestamp() {
+        return this.timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
 }
