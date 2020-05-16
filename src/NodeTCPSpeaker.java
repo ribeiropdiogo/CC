@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
@@ -87,8 +89,10 @@ public class NodeTCPSpeaker implements Runnable {
                         //r.printRequest();
                         external_socket_out.close();
 
-                        System.out.println(external_socket_out.getInetAddress().getHostAddress());
                         //enviar o request via udp de volta
+                        InetAddress ip;
+                        ip = InetAddress.getLocalHost();
+                        System.out.println(ip);
                         i++;
                         startRequestHandler(this.UDPsocket,r,i,external_socket_out.getInetAddress().getHostAddress());
 
