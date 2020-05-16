@@ -204,7 +204,7 @@ public class RequestHandler implements Runnable{
         while (running) {
             System.out.println("> Launched RequestHandler");
             try {
-                TimeUnit.MILLISECONDS.sleep(250);
+                TimeUnit.MILLISECONDS.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
