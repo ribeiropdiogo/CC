@@ -202,6 +202,11 @@ public class RequestHandler implements Runnable{
     }
 
     public void run() {
+        try {
+            this.control_socket = new DatagramSocket(control_port);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
         while (running) {
             System.out.println("> Launched RequestHandler");
             try {
@@ -224,8 +229,6 @@ public class RequestHandler implements Runnable{
                 }
 
                 boolean end = false;
-
-                this.control_socket = new DatagramSocket(control_port);
 
                 DatagramPacket packet = new DatagramPacket(controlbuffer, controlbuffer.length);
                 while (!end){
