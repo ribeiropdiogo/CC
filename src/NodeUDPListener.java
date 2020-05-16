@@ -10,7 +10,7 @@ public class NodeUDPListener implements Runnable{
     private SortedSet<Request> requests, replies;
     private Set<String> peers;
     private DatagramSocket socket;
-    private int max_data_chunk = 10 * 1, requestnumber, pdu_size = max_data_chunk + 256;
+    private int max_data_chunk = 10 * 10, requestnumber, pdu_size = max_data_chunk + 256;
     private volatile boolean running = true;
     private byte[] buffer = new byte[pdu_size];
     private byte[] pduBuffer = new byte[pdu_size];
