@@ -34,11 +34,6 @@ public class RequestHandler implements Runnable{
         this.nodeadress = node;
         this.requestnumber = requestn;
         this.pdufragments = new HashMap<>();
-        try {
-            this.control_socket = new DatagramSocket(control_port);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
     }
 
     public static byte[] serialize(Object obj) throws IOException {
@@ -229,6 +224,9 @@ public class RequestHandler implements Runnable{
                 }
 
                 boolean end = false;
+
+                this.control_socket = new DatagramSocket(control_port);
+
                 DatagramPacket packet = new DatagramPacket(controlbuffer, controlbuffer.length);
                 while (!end){
                     control_socket.receive(packet);
@@ -282,23 +280,3 @@ public class RequestHandler implements Runnable{
         }
     }
 }
-
-/*
-                PDU pdu = new PDU();
-                pdu.setIdentifier(identifier,secretKey);
-                pdu.setControl(0);
-                pdu.setPosition(1);
-                pdu.setTotal_fragments(1);
-                pdu.setTotalSize(buffer.length);
-                pdu.setData(buffer);
-                byte[] pdubuffer = serialize(pdu);
-                System.out.println("PDU info:");
-                System.out.println("PDU size: "+pdubuffer.length);
-                System.out.println("id: "+pdu.getIdentifier(secretKey));
-                System.out.println("control: "+pdu.getControl());
-                System.out.println("fragments: "+pdu.getTotal_fragments());
-                System.out.println("position: "+pdu.getPosition());
-                System.out.println("datasize: "+pdu.getData().length);
-                DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
-                internal_socket.send(packet);
- */
