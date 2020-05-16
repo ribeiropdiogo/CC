@@ -210,6 +210,11 @@ public class RequestHandler implements Runnable{
         while (running) {
             System.out.println("> Launched RequestHandler");
             try {
+                TimeUnit.MILLISECONDS.sleep(250);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            try {
                 String identifier = nodeadress + " " + requestnumber;
                 //Converter Request em Bytes
                 byte[] buffer = serialize(request);
