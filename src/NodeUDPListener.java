@@ -149,12 +149,6 @@ public class NodeUDPListener implements Runnable{
                 this.suspects.add(id);
                 startPDUChecker(id);
             }
-            /*
-            int[] missingP = null;
-            checkMissingPositions(id,missingP);
-            sendControlPackage(id,missingP);
-
-             */
         }
     }
 
@@ -182,6 +176,8 @@ public class NodeUDPListener implements Runnable{
                     System.out.println("adasdasd");
                 else if(!served.contains(pdu.getIdentifier(secretKey)))
                     System.out.println("ssssssssss");
+
+                System.out.println(pdu.getIdentifier(secretKey));
 
                 if (validOrigin(pdu.getIdentifier(secretKey)) && !served.contains(pdu.getIdentifier(secretKey))) {
                     System.out.println("> UDPListener: Packet Received");
