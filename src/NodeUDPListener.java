@@ -30,7 +30,6 @@ public class NodeUDPListener implements Runnable{
             this.peers = ps;
             this.suspects = new HashSet<>();
             this.served = new HashSet<>();
-            this.control_socket = new DatagramSocket(control_port);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,6 +80,7 @@ public class NodeUDPListener implements Runnable{
         String[] ip = identifier.split("\\s+");
         int port = 10000 + Integer.parseInt(ip[1]);
 
+        this.control_socket = new DatagramSocket(port);
         DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, port);
         control_socket.send(packet);
     }
