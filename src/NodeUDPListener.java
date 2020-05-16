@@ -18,12 +18,6 @@ public class NodeUDPListener implements Runnable{
     private Map<String,SortedSet<PDU>> pduPackets;
     private Set<String> suspects, served;
     private DatagramSocket control_socket;
-    private int control_port = 10808;
-
-    //controlo de pacotes
-    private int protected_control_port = 10808;
-    private DatagramSocket internal_control_socket;
-    //fim
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
@@ -84,8 +78,10 @@ public class NodeUDPListener implements Runnable{
         byte[] aux = msg.getBytes();
         pdu.setData(aux);
         byte[] pdubuffer = serialize(pdu);
+        String[] ip = identifier.split("\\s+");
+        int port = 10000 + Integer.parseInt(ip[1]);
 
-        DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.control_port);
+        DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, port);
         control_socket.send(packet);
     }
 
