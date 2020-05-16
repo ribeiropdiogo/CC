@@ -10,10 +10,10 @@ public class Node {
     private Set<String> peers;
     private String target_address;
     private int outside_port, served = 0;
-    private int protected_port = 6666;
+    private int protected_port = 6666, control_port = 4646;
     private ServerSocket external_socket_in;
     private Socket external_socket_out;
-    private DatagramSocket internal_socket;
+    private DatagramSocket internal_socket, control_socket;
     private SortedSet<Request> requests, replies;
 
     /* CONSTRUTORES */
@@ -33,6 +33,7 @@ public class Node {
 
         try {
             internal_socket = new DatagramSocket(protected_port);
+            control_socket = new DatagramSocket(control_port);
         } catch (SocketException e) {
             e.printStackTrace();
         }
@@ -100,7 +101,7 @@ public class Node {
                     try {
                         socket = external_socket_in.accept();
                         served++;
-                        NodeTCPListener nl = new NodeTCPListener(socket, requests,replies,target_address, my_address, internal_socket, peers,protected_port,served);
+                        NodeTCPListener nl = new NodeTCPListener(socket, requests,replies,target_address, my_address, internal_socket, peers,protected_port,served,control_port,control_socket);
                         new Thread(nl).start();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -119,7 +120,7 @@ public class Node {
             public void run(){
 
                     try {
-                        NodeTCPSpeaker ns = new NodeTCPSpeaker(outside_port, requests, target_address,protected_port,internal_socket);
+                        NodeTCPSpeaker ns = new NodeTCPSpeaker(outside_port, requests, target_address,protected_port,internal_socket,control_port,control_socket);
                         new Thread(ns).start();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -154,7 +155,7 @@ public class Node {
         Thread ulistener = new Thread(){
             public void run(){
                 try {
-                    NodeUDPListener nul = new NodeUDPListener(internal_socket,requests,replies,peers);
+                    NodeUDPListener nul = new NodeUDPListener(internal_socket,requests,replies,peers,control_port,control_socket);
                     new Thread(nul).start();
                 } catch (Exception e) {
                     e.printStackTrace();

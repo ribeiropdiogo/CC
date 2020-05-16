@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class RequestHandler implements Runnable{
-    private DatagramSocket internal_socket;
+    private DatagramSocket internal_socket, control_socket;
     private String peer, nodeadress;
     private Request request;
     private int protected_port, control_port;
@@ -13,8 +13,6 @@ public class RequestHandler implements Runnable{
     private SortedSet<PDU> fragments;
     private int max_data_chunk = 10 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
     private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size], pduBuffer = new byte[pdu_size];
-
-    private DatagramSocket control_socket;
     private  Map<Integer,byte[]> pdufragments;
 
     //controlo de pacotes
@@ -25,7 +23,7 @@ public class RequestHandler implements Runnable{
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
-    public RequestHandler(DatagramSocket socket, Request r, String peer, int port, int requestn, String node){
+    public RequestHandler(DatagramSocket socket, Request r, String peer, int port, int requestn, String node, DatagramSocket csort, int cport){
         this.internal_socket = socket;
         this.request = r;
         this.peer = peer;
@@ -33,12 +31,8 @@ public class RequestHandler implements Runnable{
         this.nodeadress = node;
         this.requestnumber = requestn;
         this.pdufragments = new HashMap<>();
-        this.control_port = 10000 + requestn;
-        try {
-            this.control_socket = new DatagramSocket(control_port);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
+        this.control_port = cport;
+        this.control_socket = csort;
     }
 
     public static byte[] serialize(Object obj) throws IOException {

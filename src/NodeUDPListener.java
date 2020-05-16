@@ -10,7 +10,7 @@ public class NodeUDPListener implements Runnable{
     private SortedSet<Request> requests, replies;
     private Set<String> peers;
     private DatagramSocket socket;
-    private int max_data_chunk = 10 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
+    private int max_data_chunk = 10 * 1024, requestnumber, pdu_size = max_data_chunk + 256, control_port;
     private volatile boolean running = true;
     private byte[] buffer = new byte[pdu_size];
     private byte[] pduBuffer = new byte[pdu_size];
@@ -21,7 +21,7 @@ public class NodeUDPListener implements Runnable{
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
-    public NodeUDPListener(DatagramSocket socket, SortedSet<Request> r, SortedSet<Request> rep, Set<String> ps) {
+    public NodeUDPListener(DatagramSocket socket, SortedSet<Request> r, SortedSet<Request> rep, Set<String> ps, int control_port, DatagramSocket control_socket) {
         try {
             this.socket = socket;
             this.requests = r;
@@ -30,6 +30,8 @@ public class NodeUDPListener implements Runnable{
             this.peers = ps;
             this.suspects = new HashSet<>();
             this.served = new HashSet<>();
+            this.control_socket = control_socket;
+            this.control_port = control_port;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,10 +80,8 @@ public class NodeUDPListener implements Runnable{
         pdu.setData(aux);
         byte[] pdubuffer = serialize(pdu);
         String[] ip = identifier.split("\\s+");
-        int port = 10000 + Integer.parseInt(ip[1]);
         InetAddress address = InetAddress.getByName(ip[0]);
-        this.control_socket = new DatagramSocket(port);
-        DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, port);
+        DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, control_port);
         control_socket.send(packet);
     }
 

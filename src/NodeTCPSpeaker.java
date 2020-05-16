@@ -12,20 +12,22 @@ public class NodeTCPSpeaker implements Runnable {
     private int outside_port;
     private SortedSet<Request> requests;
     private String target_address;
-    private int protected_port;
+    private int protected_port, control_port;
     private volatile boolean running = true;
     private int contador = 0;
-    private DatagramSocket UDPsocket;
+    private DatagramSocket UDPsocket, control_socket;
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
 
-    public NodeTCPSpeaker(int s, SortedSet<Request> r, String target, int port, DatagramSocket socket) {
+    public NodeTCPSpeaker(int s, SortedSet<Request> r, String target, int port, DatagramSocket socket, int cport, DatagramSocket csock) {
         this.outside_port = s;
         this.requests = r;
         this.target_address = target;
         this.protected_port = port;
         this.UDPsocket = socket;
+        this.control_port = cport;
+        this.control_socket = csock;
     }
 
     public void startRequestHandler(DatagramSocket s, Request r, int j, String address) throws IOException {
@@ -34,7 +36,7 @@ public class NodeTCPSpeaker implements Runnable {
             public void run(){
                 Socket socket = null;
                 try {
-                    RequestHandler rh = new RequestHandler(s,r,r.getContactNodeAddress(secretKey),protected_port,j,address);
+                    RequestHandler rh = new RequestHandler(s,r,r.getContactNodeAddress(secretKey),protected_port,j,address,control_socket,control_port);
                     new Thread(rh).start();
                 } catch (Exception e) {
                     e.printStackTrace();

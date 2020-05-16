@@ -11,16 +11,16 @@ public class NodeTCPListener implements Runnable {
     private String target_address, node_address;
     private String source_address;
     private Socket socket;
-    private DatagramSocket UDPsocket;
+    private DatagramSocket UDPsocket, control_socket;
     private SortedSet<Request> requests, replies;
     private Boolean running;
     private Set<String> peers;
     private List<String> waitinglist;
-    private int protected_port, requestn;
+    private int protected_port, requestn, control_port;
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
-    public NodeTCPListener(Socket s, SortedSet<Request> r, SortedSet<Request> rep, String address, String naddress, DatagramSocket usocket, Set<String> p, int port, int served) {
+    public NodeTCPListener(Socket s, SortedSet<Request> r, SortedSet<Request> rep, String address, String naddress, DatagramSocket usocket, Set<String> p, int port, int served, int control_port, DatagramSocket control_socket) {
         this.socket = s;
         this.requests = r;
         this.target_address = address;
@@ -32,6 +32,8 @@ public class NodeTCPListener implements Runnable {
         this.waitinglist =  new ArrayList<>();
         this.replies = rep;
         this.requestn = served;
+        this.control_port = control_port;
+        this.control_socket = control_socket;
     }
 
     private int random(int lower, int upper){
@@ -58,7 +60,7 @@ public class NodeTCPListener implements Runnable {
         Thread handler = new Thread(){
             public void run(){
                     try {
-                        RequestHandler rh = new RequestHandler(s,r,getPeer(),port,requestn,node_address);
+                        RequestHandler rh = new RequestHandler(s,r,getPeer(),port,requestn,node_address,control_socket,control_port);
                         new Thread(rh).start();
                     } catch (Exception e) {
                         e.printStackTrace();
