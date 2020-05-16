@@ -12,7 +12,7 @@ public class RequestHandler implements Runnable{
     private volatile boolean running = true;
     private SortedSet<PDU> fragments;
     private int max_data_chunk = 10 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
-    private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size], buffer = new byte[pdu_size], pduBuffer = new byte[pdu_size];
+    private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size], pduBuffer = new byte[pdu_size];
 
     private DatagramSocket control_socket;
     private  Map<Integer,byte[]> pdufragments;
@@ -169,7 +169,7 @@ public class RequestHandler implements Runnable{
     }
     */
 
-    private void sendFragment(String identifier, int j, int i, int real_length, InetAddress address) throws IOException {
+    private void sendFragment(String identifier, int j, int i, int real_length, InetAddress address, byte[] buffer) throws IOException {
         PDU pdu = new PDU();
         pdu.setIdentifier(identifier,secretKey);
         pdu.setControl(0);
@@ -223,11 +223,11 @@ public class RequestHandler implements Runnable{
 
 
                 for (int j = 0;j < i;j++){
-                    sendFragment(identifier,j,i,real_length,address);
+                    sendFragment(identifier,j,i,real_length,address,buffer);
                 }
 
                 boolean end = false;
-                /*
+
                 DatagramPacket packet = new DatagramPacket(controlbuffer, controlbuffer.length);
                 while (!end){
                     control_socket.receive(packet);
@@ -241,11 +241,11 @@ public class RequestHandler implements Runnable{
                             System.out.println("> RequestHandler: Received success message ");
                         } else {
                             int fragment = Integer.parseInt(pdu.getData().toString());
-                            sendFragment(identifier,fragment,i,real_length,address);
+                            sendFragment(identifier,fragment,i,real_length,address,pdufragments.get(fragment));
                             System.out.println("> RequestHandler: Resending fragment " + fragment);
                         }
                     }
-                }*/
+                }
 
                 // 1º ESPERAMOS UNS SEGUNDOS
 
