@@ -4,6 +4,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class RequestHandler implements Runnable{
     private DatagramSocket internal_socket;
@@ -63,7 +64,7 @@ public class RequestHandler implements Runnable{
     }
 
 
-    private void controlPacketReceiver(int[] positionsr, int controld) {
+    private int controlPacketReceiver(int[] positionsr) {
         try {
             internal_control_socket = new DatagramSocket(protected_control_port);
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -78,7 +79,8 @@ public class RequestHandler implements Runnable{
 
             if(pdu.getControl()==2) {
 
-                controld = 2;
+                System.out.println("> Request Handler: Finito");
+                return 2;
 
             } else {
 
@@ -98,13 +100,17 @@ public class RequestHandler implements Runnable{
                 //imprimir as positions que temos de reenviar
                 System.out.println(positionsr);
 
+                return 1;
+
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return 0;
     }
 
-    private void controlPacketSender(String identifier,InetAddress address) throws IOException {
+    private int controlPacketSender(String identifier,InetAddress address) throws IOException {
         PDU pdu = new PDU();
         pdu.setIdentifier(identifier,secretKey);
         pdu.setControl(1);
@@ -120,10 +126,11 @@ public class RequestHandler implements Runnable{
         //Enviar o PDU
         DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
         internal_socket.send(packet);
+
+        return 0;
     }
 
-    private void repeatPacketSender(String identifier,InetAddress address, int[] positionv) throws IOException {
-
+    private int repeatPacketSender(String identifier,InetAddress address, int[] positionv) throws IOException {
         for (Iterator<PDU> it = fragments.iterator(); it.hasNext(); ) {
             PDU n = it.next();
             for(int i = 0; i < positionv.length; i++) {
@@ -137,6 +144,8 @@ public class RequestHandler implements Runnable{
                 }
             }
         }
+
+        return 0;
     }
 
     public void run() {
@@ -196,17 +205,20 @@ public class RequestHandler implements Runnable{
 
                 // VAMOS ENVIAR O PACOTE DE CONTROLO ENQUANTO NÃO RECEBERMOS RESPOSTA
 
+
                 /*
+                TimeUnit.SECONDS.sleep(2);
+
                 int[] positionsr = null;
                 int controld = 0;
 
                 do {
                     if(controld == 1) {
-                        repeatPacketSender(identifier,address,positionsr);
+                        controld = repeatPacketSender(identifier,address,positionsr);
                     } else {
-                        controlPacketSender(identifier, address);
+                        controld = controlPacketSender(identifier, address);
                     }
-                    controlPacketReceiver(positionsr,controld);
+                    controld = controlPacketReceiver(positionsr);
                 } while(controld!=2);
 
                 */
