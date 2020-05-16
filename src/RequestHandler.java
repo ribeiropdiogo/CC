@@ -14,7 +14,7 @@ public class RequestHandler implements Runnable{
     private int max_data_chunk = 10 * 10, requestnumber, pdu_size = max_data_chunk + 256;
     private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size], buffer = new byte[pdu_size], pduBuffer = new byte[pdu_size];
 
-    private int control_port = 8888;
+    private int control_port = 10808;
     private DatagramSocket control_socket;
     private  Map<Integer,byte[]> pdufragments;
 
