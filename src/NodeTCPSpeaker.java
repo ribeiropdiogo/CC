@@ -87,7 +87,7 @@ public class NodeTCPSpeaker implements Runnable {
                         //r.printRequest();
                         external_socket_out.close();
 
-
+                        System.out.println(external_socket_out.getInetAddress().getHostAddress());
                         //enviar o request via udp de volta
                         i++;
                         startRequestHandler(this.UDPsocket,r,i,external_socket_out.getInetAddress().getHostAddress());
