@@ -12,7 +12,10 @@ public class RequestHandler implements Runnable{
     private String peer, nodeadress;
     private Request request;
     private int protected_port;
+    //controlo de pacotes
     private int protected_control_port = 8888;
+    private int internal_control_socket;
+    //fim
     private volatile boolean running = true;
     private SortedSet<PDU> fragments;
     private int max_data_chunk = 10 * 1, requestnumber, pdu_size = max_data_chunk + 256;
@@ -60,7 +63,7 @@ public class RequestHandler implements Runnable{
 
     /*
     private boolean controlPacketReceiver() {
-
+        internal_control_socket = new DatagramSocket(protected_control_pocket);
     }
      */
 
