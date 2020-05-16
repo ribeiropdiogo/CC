@@ -57,13 +57,31 @@ public class RequestHandler implements Runnable{
         fragments = new TreeSet<>(comparator);
     }
 
-    private void controlPacketReceiver() {
+    /*
+    private boolean controlPacketReceiver() {
 
     }
+     */
 
-    private void controlPacketSender() {
+    /*
+    private void controlPacketSender(String identifier,InetAddress address) throws IOException {
+        PDU pdu = new PDU();
+        pdu.setIdentifier(identifier,secretKey);
+        pdu.setControl(1);
+        pdu.setPosition(0);
+        pdu.setTotal_fragments(0);
+        pdu.setTotalSize(0);
+        byte[] aux = new byte[0];
+        pdu.setData(aux);
 
+        //Pdu para bytes
+        byte[] pdubuffer = serialize(pdu);
+
+        //Enviar o PDU
+        DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
+        internal_socket.send(packet);
     }
+    */
 
     public void run() {
         while (running) {
@@ -82,8 +100,6 @@ public class RequestHandler implements Runnable{
                 int i = (int)Math.ceil(f);
 
                 //System.out.println(">: "+i+" "+buffer.length+" "+max_data_chunk+" | "+f+" | "+Math.ceil(f));
-
-                //O meu plano inicial é
 
                 for (int j = 0;j < i;j++){
                     PDU pdu = new PDU();
@@ -122,11 +138,13 @@ public class RequestHandler implements Runnable{
                     internal_socket.send(packet);
                 }
 
+                // VAMOS ENVIAR O PACOTE DE CONTROLO ENQUANTO NÃO RECEBERMOS RESPOSTA
 
-
-                //do {
-                    controlPacketReceiver();
-                //} while(true);
+                /*
+                do {
+                    controlPacketSender(identifier,address,this.protected_port);
+                } while(!controlPacketReceiver);
+                 */
 
                 System.out.println("> RequestHandler: Sent Request to peer "+address);
                 running = false;
