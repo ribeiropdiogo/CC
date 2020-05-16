@@ -10,7 +10,7 @@ public class NodeUDPListener implements Runnable{
     private SortedSet<Request> requests, replies;
     private Set<String> peers;
     private DatagramSocket socket;
-    private int max_data_chunk = 10 * 10, requestnumber, pdu_size = max_data_chunk + 256;
+    private int max_data_chunk = 10 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
     private volatile boolean running = true;
     private byte[] buffer = new byte[pdu_size];
     private byte[] pduBuffer = new byte[pdu_size];
@@ -56,101 +56,11 @@ public class NodeUDPListener implements Runnable{
 
     private static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
         Object o = null;
-            ByteArrayInputStream in = new ByteArrayInputStream(data);
-            ObjectInputStream is = new ObjectInputStream(in);
-            o = is.readObject();
-            is.close();
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = new ObjectInputStream(in);
+        o = is.readObject();
+        is.close();
         return o;
-    }
-
-    public static byte[] addAll(final byte[] array1, byte[] array2) {
-        byte[] joinedArray = Arrays.copyOf(array1, array1.length + array2.length);
-        System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
-        return joinedArray;
-    }
-
-    private void checkMissingPositions(String id,int[] missingP){
-        SortedSet<PDU> fragments = pduPackets.get(id);
-        PDU p = fragments.first();
-        int total = p.getTotal_fragments();
-        missingP = new int[total];
-        for(int i = 0; i < total; i++) {
-            missingP[i] = i+1;
-        }
-        for (Iterator<PDU> it = fragments.iterator(); it.hasNext(); ) {
-            PDU n = it.next();
-            for(int i = 0; i < total; i++) {
-                if(n.getPosition() == missingP[i]) {
-                    missingP[i] = 0;
-                }
-            }
-        }
-    }
-
-    private void sendControlPackages(String id,int[] missingP){
-        try {
-            PDU pdu = new PDU();
-            pdu.setIdentifier(id,secretKey);
-            pdu.setControl(1);
-            pdu.setPosition(0);
-            pdu.setTotal_fragments(0);
-            pdu.setTotalSize(0);
-            byte[] aux = new byte[max_data_chunk];
-            int tam = 0;
-
-            String spositions = "";
-
-            StringBuilder sb = new StringBuilder(spositions);
-
-            int j = 0;
-
-            for(int i = 0; i < missingP.length; i++) {
-                if(missingP[i]!=0) {
-                    sb.insert(j,(char)missingP[i]);
-                }
-                j++;
-                sb.insert(j,'-');
-                j++;
-            }
-
-            byte[] buffer = serialize(spositions);
-
-
-            System.arraycopy(buffer, max_data_chunk, aux, 0, max_data_chunk);
-            pdu.setData(aux);
-
-
-            byte[] pdubuffer = serialize(pdu);
-
-            internal_control_socket = new DatagramSocket(protected_control_port);
-            DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_control_port);
-            internal_control_socket.send(packet);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendOkControlPackages(String id){
-        try {
-            PDU pdu = new PDU();
-            pdu.setIdentifier(id,secretKey);
-            pdu.setControl(2);
-            pdu.setPosition(0);
-            pdu.setTotal_fragments(0);
-            pdu.setTotalSize(0);
-            byte[] aux = new byte[0];
-
-
-            byte[] pdubuffer = serialize(pdu);
-
-            internal_control_socket = new DatagramSocket(protected_control_port);
-            DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_control_port);
-            internal_control_socket.send(packet);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private boolean allFragments(String id){
@@ -180,7 +90,6 @@ public class NodeUDPListener implements Runnable{
     }
 
     public void assemble(String id) throws IOException, ClassNotFoundException{
-        //sendOkControlPackage(id);
         SortedSet<PDU> fragments = pduPackets.get(id);
 
         //Alocar um buffer para colocat todos os pdus
@@ -209,6 +118,7 @@ public class NodeUDPListener implements Runnable{
     }
 
     public boolean stalled(String id){
+        System.out.println("> UDPListener: Stalled");
         SortedSet<PDU> fragments = pduPackets.get(id);
         PDU p = fragments.first();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());

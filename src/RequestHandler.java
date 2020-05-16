@@ -11,7 +11,7 @@ public class RequestHandler implements Runnable{
     private int protected_port, control_port;
     private volatile boolean running = true;
     private SortedSet<PDU> fragments;
-    private int max_data_chunk = 10 * 10, requestnumber, pdu_size = max_data_chunk + 256;
+    private int max_data_chunk = 10 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
     private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size], buffer = new byte[pdu_size], pduBuffer = new byte[pdu_size];
 
     private DatagramSocket control_socket;
@@ -221,13 +221,11 @@ public class RequestHandler implements Runnable{
                 int real_length = buffer.length;
                 InetAddress address = null;
                 address = InetAddress.getByName(peer);
-                //controlFlow();
 
                 //pegar em pedaços do buffer e criar PDU's
                 float f = ((float)buffer.length/(float)max_data_chunk);
                 int i = (int)Math.ceil(f);
 
-                //System.out.println(">: "+i+" "+buffer.length+" "+max_data_chunk+" | "+f+" | "+Math.ceil(f));
 
                 for (int j = 0;j < i;j++){
                     sendFragment(identifier,j,i,real_length,address);
