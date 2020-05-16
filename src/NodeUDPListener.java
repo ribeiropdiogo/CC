@@ -182,6 +182,11 @@ public class NodeUDPListener implements Runnable{
                 PDU pdu = (PDU) deserialize(pduBuffer);
                 Arrays.fill(pduBuffer, (byte) 0);
 
+                if (validOrigin(pdu.getIdentifier(secretKey)))
+                    System.out.println("adasdasd");
+                else if(!served.contains(pdu.getIdentifier(secretKey)))
+                    System.out.println("ssssssssss");
+
                 if (validOrigin(pdu.getIdentifier(secretKey)) && !served.contains(pdu.getIdentifier(secretKey))) {
                     System.out.println("> UDPListener: Packet Received");
 
@@ -199,28 +204,6 @@ public class NodeUDPListener implements Runnable{
                     }
 
                     assembler(pdu.getIdentifier(secretKey));
-
-                    /*
-
-                    if(pdu.getControl()==0) {
-                        if (this.pduPackets.containsKey(pdu.getIdentifier(secretKey))) {
-                            SortedSet<PDU> fragments = pduPackets.get(pdu.getIdentifier(secretKey));
-                            if (!fragments.contains(pdu)) {
-                                fragments.add(pdu);
-                            }
-                            pduPackets.put(pdu.getIdentifier(secretKey), fragments);
-                        } else {
-                            Comparator comparator = new PDUComparator();
-                            SortedSet<PDU> fragments = new TreeSet<>(comparator);
-                            fragments.add(pdu);
-                            pduPackets.put(pdu.getIdentifier(secretKey), fragments);
-                        }
-
-                    } else {
-                        assembler(pdu.getIdentifier(secretKey));
-                    }
-
-                     */
 
                 } else {
                     System.out.println("> UDPListener: Packet from unknown source");
