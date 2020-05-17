@@ -90,6 +90,7 @@ public class PDUChecker implements Runnable{
     public void run() {
         while (running){
             try {
+                System.out.println("> PDUChecker: Activated");
                 Set<Integer> missing = missingFragments();
                 resendFragment(missing);
                 if (allFragments(identifier)) {
@@ -100,5 +101,6 @@ public class PDUChecker implements Runnable{
                 e.printStackTrace();
             }
         }
+        System.out.println("> PDUChecker: Deactivated");
     }
 }
