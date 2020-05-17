@@ -11,7 +11,7 @@ public class RequestHandler implements Runnable{
     private int protected_port, control_port;
     private volatile boolean running = true;
     private SortedSet<PDU> fragments;
-    private int max_data_chunk = 10 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
+    private int max_data_chunk = 10 * 1, requestnumber, pdu_size = max_data_chunk + 256;
     private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size], pduBuffer = new byte[pdu_size];
     private  Map<Integer,byte[]> pdufragments;
 
