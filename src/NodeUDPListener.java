@@ -149,7 +149,7 @@ public class NodeUDPListener implements Runnable{
         if (allFragments(id)) {
             assemble(id);
         } else {
-            if (!this.suspects.contains(id)) {
+            if (stalled(id)) {
                 this.suspects.add(id);
                 startPDUChecker(id);
             }
