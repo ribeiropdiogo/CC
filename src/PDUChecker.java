@@ -4,6 +4,7 @@ import java.io.ObjectOutputStream;
 import java.net.*;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class PDUChecker implements Runnable{
     private String identifier;
@@ -86,6 +87,11 @@ public class PDUChecker implements Runnable{
     public void run() {
         while (running){
             try {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(3250);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 System.out.println("> PDUChecker: Activated");
                 Set<Integer> missing = missingFragments();
                 System.out.println("> PDUChecker: Checking for missing fragments");
