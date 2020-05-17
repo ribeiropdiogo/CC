@@ -143,32 +143,6 @@ public class TestingRequestHandler implements Runnable{
                     }
                 }
 
-                // 1º ESPERAMOS UNS SEGUNDOS
-
-                // DEPOIS ESTAMOS SEMPRE A ENVIAR A MENSAGEM DE CONTROLO ENQUANTO NAO RECEBERMOS UM PEDIDO DE PACOTES OU UM PACOTE COM CONTROL == 2 A CONFIRMAR QUE ESTA TUDO PRONTO
-
-                // REPEAT PACKET SENDER ENVIA OS PACOTES PEDIDOS
-
-                // CONTROL PACKET SENDER MANDA UM PACOTE DE CONTROLO A PERGUNTAR SE ESTA TUDO BEM
-
-                // CONTROLPACKETRECEIVER ESTA SEMPRE A LER OS PACOTES QUE ESTAO A CHEGAR ATE FICARMOS COM CONTROLD == 2
-                /*
-                TimeUnit.SECONDS.sleep(2);
-
-                int[] positionsr = null;
-                int controld = 0;
-
-                do {
-                    if(controld == 1) {
-                        controld = repeatPacketSender(identifier,address,positionsr);
-                    } else {
-                        controld = controlPacketSender(identifier, address);
-                    }
-                    controld = controlPacketReceiver(positionsr);
-                } while(controld!=2);
-
-                */
-
                 System.out.println("> RequestHandler: Sent Request to peer "+address);
                 running = false;
             } catch (Exception e) {

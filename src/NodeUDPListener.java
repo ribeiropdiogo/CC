@@ -114,15 +114,16 @@ public class NodeUDPListener implements Runnable{
     }
 
     public boolean stalled(String id){
-        System.out.println("> UDPListener: Stalled");
         SortedSet<PDU> fragments = pduPackets.get(id);
         PDU p = fragments.first();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         long current = timestamp.getTime();
         long creationTime = p.getTimestamp();
 
-        if (current - creationTime > 3500)
+        if (current - creationTime > 3500) {
+            System.out.println("> UDPListener: Stalled");
             return true;
+        }
         else return false;
     }
 
@@ -171,8 +172,6 @@ public class NodeUDPListener implements Runnable{
                 System.out.println("> UDPListener: Converting Buffer to PDU");
                 PDU pdu = (PDU) deserialize(pduBuffer);
                 Arrays.fill(pduBuffer, (byte) 0);
-
-                System.out.println(pdu.getIdentifier(secretKey));
 
                 if (validOrigin(pdu.getIdentifier(secretKey)) && !served.contains(pdu.getIdentifier(secretKey))) {
                     System.out.println("> UDPListener: Packet Received");
