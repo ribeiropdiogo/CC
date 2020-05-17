@@ -1,8 +1,12 @@
 import java.io.*;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.sql.Timestamp;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
 
 public class RequestHandler implements Runnable{
     private DatagramSocket internal_socket, control_socket;
@@ -11,7 +15,7 @@ public class RequestHandler implements Runnable{
     private int protected_port, control_port;
     private volatile boolean running = true;
     private SortedSet<PDU> fragments;
-    private int max_data_chunk = 20 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
+    private int max_data_chunk = 20 * 1, requestnumber, pdu_size = max_data_chunk + 256;
     private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size], pduBuffer = new byte[pdu_size];
     private  Map<Integer,byte[]> pdufragments;
 
@@ -84,6 +88,7 @@ public class RequestHandler implements Runnable{
         byte[] pdubuffer = serialize(pdu);
         pdufragments.put(j+1,pdubuffer);
 
+        System.out.println("-------------------------------");
         System.out.println("PDU info:");
         System.out.println("PDU size: "+pdubuffer.length);
         System.out.println("id: "+pdu.getIdentifier(secretKey));
@@ -132,7 +137,7 @@ public class RequestHandler implements Runnable{
                             System.out.println("> RequestHandler: Received success message ");
                         } else {
                             int fragment = Integer.parseInt(new String(pdu.getData()));
-                            sendFragment(identifier,fragment,i,real_length,address,pdufragments.get(fragment));
+                            sendFragment(identifier,fragment-1,i,real_length,address,buffer);
                             System.out.println("> RequestHandler: Resending fragment " + fragment);
                         }
                     }
