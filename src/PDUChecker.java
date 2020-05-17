@@ -87,16 +87,17 @@ public class PDUChecker implements Runnable{
     public void run() {
         while (running){
             try {
-                System.out.println("> PDUChecker: Activated");
-                Set<Integer> missing = missingFragments();
-                System.out.println("> PDUChecker: Checking for missing fragments");
-                resendFragment(missing);
-                System.out.println("> PDUChecker: Asked for resend");
                 if (allFragments(identifier)) {
                     System.out.println("> PDUChecker: All fragments are present");
                     suspects.remove(identifier);
                     running = false;
                 }
+                System.out.println("> PDUChecker: Activated");
+                Set<Integer> missing = missingFragments();
+                System.out.println("> PDUChecker: Checking for missing fragments");
+                resendFragment(missing);
+                System.out.println("> PDUChecker: Asked for resend");
+
                 TimeUnit.MILLISECONDS.sleep(1000);
             } catch (Exception e){
                 e.printStackTrace();
