@@ -121,11 +121,8 @@ public class NodeUDPListener implements Runnable{
         long current = timestamp.getTime();
         long creationTime = p.getTimestamp();
         long dif = current - creationTime;
-        System.out.println("curent time "+current);
-        System.out.println("creation time "+creationTime);
-        System.out.println("dif time "+ dif);
         if (dif > 3500) {
-            System.out.println("> UDPListener: Stalled");
+            System.out.println("> UDPListener: PDU Stalled");
             return true;
         }
         else return false;
