@@ -11,7 +11,7 @@ public class RequestHandler implements Runnable{
     private int protected_port, control_port;
     private volatile boolean running = true;
     private SortedSet<PDU> fragments;
-    private int max_data_chunk = 10 * 1, requestnumber, pdu_size = max_data_chunk + 256;
+    private int max_data_chunk = 20 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
     private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size], pduBuffer = new byte[pdu_size];
     private  Map<Integer,byte[]> pdufragments;
 
@@ -60,109 +60,6 @@ public class RequestHandler implements Runnable{
         return o;
     }
 
-    /*
-    private void controlFlow(){
-        Comparator comparator = new PDUComparator();
-        fragments = new TreeSet<>(comparator);
-    }
-    private int controlPacketReceiver(int[] positionsr) {
-        try {
-            internal_control_socket = new DatagramSocket(protected_control_port);
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-            // receber pacotes udp
-            internal_control_socket.receive(packet);
-            System.out.println("> RequestHandler: Receiving control packet");
-            pduBuffer = packet.getData();
-            System.out.println("> RequestHandler: Converting Buffer to PDU");
-            PDU pdu = (PDU) deserialize(pduBuffer);
-
-            //Se recebermos um pacote com control == 2, então
-
-            if(pdu.getControl()==2) {
-
-                System.out.println("> Request Handler: Finito");
-                return 2;
-
-            } else {
-
-                Arrays.fill(pduBuffer, (byte) 0);
-                byte[] data = pdu.getData();
-                String pos = (String) deserialize(data);
-                positionsr = new int[pdu.getTotal_fragments()];
-                int j = 0;
-                //tirar as positions da string
-                for(int i = 0; i < pos.length(); i++) {
-                    if(pos.charAt(i)!='-') {
-                        positionsr[j] = pos.charAt(i);
-                        j++;
-                    }
-                }
-
-                //imprimir as positions que temos de reenviar
-                System.out.println(positionsr);
-
-                return 1;
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return 0;
-    }
-    private int controlPacketSender(String identifier,InetAddress address) throws IOException {
-        try {
-            PDU pdu = new PDU();
-            pdu.setIdentifier(identifier,secretKey);
-            pdu.setControl(1);
-            pdu.setPosition(0);
-            pdu.setTotal_fragments(0);
-            pdu.setTotalSize(0);
-            byte[] aux = new byte[0];
-            pdu.setData(aux);
-
-            //Pdu para bytes
-            byte[] pdubuffer = serialize(pdu);
-
-            //Enviar o PDU
-            DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
-            internal_socket.send(packet);
-
-            return 0;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return 0;
-    }
-    private int repeatPacketSender(String identifier,InetAddress address, int[] positionv) throws IOException {
-        try {
-
-            for (Iterator<PDU> it = fragments.iterator(); it.hasNext(); ) {
-                PDU n = it.next();
-                for(int i = 0; i < positionv.length; i++) {
-                    if(n.getPosition() == positionv[i]) {
-                        //Pdu para bytes
-                        byte[] pdubuffer = serialize(n);
-
-                        //Enviar o PDU
-                        DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.protected_port);
-                        internal_socket.send(packet);
-                    }
-                }
-            }
-
-            return 0;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return 0;
-    }
-    */
-
     private void sendFragment(String identifier, int j, int i, int real_length, InetAddress address, byte[] buffer) throws IOException {
         PDU pdu = new PDU();
         pdu.setIdentifier(identifier,secretKey);
@@ -203,11 +100,6 @@ public class RequestHandler implements Runnable{
     public void run() {
         while (running) {
             System.out.println("> Launched RequestHandler");
-            try {
-                TimeUnit.MILLISECONDS.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             try {
                 String identifier = nodeadress + " " + requestnumber;
                 //Converter Request em Bytes
