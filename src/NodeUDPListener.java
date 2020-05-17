@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class NodeUDPListener implements Runnable{
 
@@ -130,6 +131,33 @@ public class NodeUDPListener implements Runnable{
         else return false;
     }
 
+    public void anti_stall() throws IOException {
+
+        Thread handler = new Thread(){
+            public void run(){
+                while (running) {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    Set<String> s = pduPackets.keySet();
+
+                    for (String id : s)
+                        if (stalled(id) && !suspects.contains(id)) {
+                            suspects.add(id);
+                            try {
+                                startPDUChecker(id);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                }
+            }
+        };
+        handler.start();
+    }
+
     public void startPDUChecker(String id) throws IOException {
 
         Thread handler = new Thread(){
@@ -146,14 +174,8 @@ public class NodeUDPListener implements Runnable{
     }
 
     private void assembler(String id) throws IOException, ClassNotFoundException {
-        if (allFragments(id)) {
+        if (allFragments(id))
             assemble(id);
-        } else {
-            if (stalled(id)) {
-                this.suspects.add(id);
-                startPDUChecker(id);
-            }
-        }
     }
 
     private boolean validOrigin(String s){
@@ -164,6 +186,11 @@ public class NodeUDPListener implements Runnable{
     }
 
     public void run() {
+        try {
+            anti_stall();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         while (running) {
             try {
