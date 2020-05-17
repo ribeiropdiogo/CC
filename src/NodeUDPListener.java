@@ -110,6 +110,8 @@ public class NodeUDPListener implements Runnable{
         } else if (r.getStatus(secretKey).equals("sd")) {
             replies.add(r);
             served.add(id);
+            if (suspects.contains(id))
+                suspects.remove(id);
             System.out.println("> UDPListener: Reply added to queue");
         }
     }

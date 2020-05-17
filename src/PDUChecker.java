@@ -89,7 +89,6 @@ public class PDUChecker implements Runnable{
             try {
                 if (allFragments(identifier)) {
                     System.out.println("> PDUChecker: All fragments are present");
-                    suspects.remove(identifier);
                     running = false;
                 } else {
                     System.out.println("> PDUChecker: Activated");
