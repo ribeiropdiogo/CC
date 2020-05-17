@@ -97,6 +97,7 @@ public class PDUChecker implements Runnable{
                     suspects.remove(identifier);
                     running = false;
                 }
+                TimeUnit.MILLISECONDS.sleep(500);
             } catch (Exception e){
                 e.printStackTrace();
             }
