@@ -87,11 +87,6 @@ public class PDUChecker implements Runnable{
     public void run() {
         while (running){
             try {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(3250);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 System.out.println("> PDUChecker: Activated");
                 Set<Integer> missing = missingFragments();
                 System.out.println("> PDUChecker: Checking for missing fragments");
