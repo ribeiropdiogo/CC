@@ -98,7 +98,7 @@ public class PDUChecker implements Runnable{
                 resendFragment(missing);
                 System.out.println("> PDUChecker: Asked for resend");
 
-                TimeUnit.MILLISECONDS.sleep(1000);
+                TimeUnit.MILLISECONDS.sleep(100);
             } catch (Exception e){
                 e.printStackTrace();
             }
