@@ -164,7 +164,7 @@ public class NodeUDPListener implements Runnable{
         Thread handler = new Thread(){
             public void run(){
                 try {
-                    PDUChecker pc = new PDUChecker(pduPackets, suspects, id);
+                    PDUChecker pc = new PDUChecker(pduPackets, suspects, id, control_port);
                     new Thread(pc).start();
                 } catch (Exception e) {
                     e.printStackTrace();

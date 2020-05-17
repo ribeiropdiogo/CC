@@ -11,14 +11,15 @@ public class PDUChecker implements Runnable{
     private Map<String,SortedSet<PDU>> pdus;
     private volatile boolean running = true;
     private DatagramSocket control_socket;
-    private int control_port = 8989;
+    private int control_port;
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
-    public PDUChecker(Map<String, SortedSet<PDU>> ps, Set<String> s, String id) {
+    public PDUChecker(Map<String, SortedSet<PDU>> ps, Set<String> s, String id, int cport) {
         this.identifier = id;
         this.suspects = s;
         this.pdus = ps;
+        this.control_port = cport;
         try {
             this.control_socket = new DatagramSocket(control_port);
         } catch (SocketException e) {
