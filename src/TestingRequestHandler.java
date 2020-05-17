@@ -119,7 +119,7 @@ public class TestingRequestHandler implements Runnable{
 
 
                 for (int j = 0;j < i;j++){
-                    if(j!=1)
+                    if(j!=1 && j!= 2)
                         sendFragment(identifier,j,i,real_length,address,buffer);
                 }
 
