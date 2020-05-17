@@ -88,6 +88,7 @@ public class TestingRequestHandler implements Runnable{
         byte[] pdubuffer = serialize(pdu);
         pdufragments.put(j+1,pdubuffer);
 
+        System.out.println("-------------------------------");
         System.out.println("PDU info:");
         System.out.println("PDU size: "+pdubuffer.length);
         System.out.println("id: "+pdu.getIdentifier(secretKey));
