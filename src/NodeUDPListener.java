@@ -145,6 +145,7 @@ public class NodeUDPListener implements Runnable{
 
                     for (String id : s)
                         if (stalled(id) && !suspects.contains(id)) {
+                            System.out.println("> UDPListener: Anti-Stall mode");
                             suspects.add(id);
                             try {
                                 startPDUChecker(id);
