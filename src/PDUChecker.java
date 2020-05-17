@@ -58,7 +58,6 @@ public class PDUChecker implements Runnable{
         String[] ip = this.identifier.split("\\s+");
         InetAddress address = InetAddress.getByName(ip[0]);
 
-        System.out.println("> PDUChecker: a - " + address.toString());
         for (Integer i :fragments ) {
             PDU pdu = new PDU();
             pdu.setIdentifier(identifier, secretKey);
@@ -70,7 +69,6 @@ public class PDUChecker implements Runnable{
             byte[] aux = i.toString().getBytes();
             pdu.setData(aux);
             byte[] pdubuffer = serialize(pdu);
-            System.out.println("> PDUChecker: pdu size - " + pdubuffer.length);
             DatagramPacket packet = new DatagramPacket(pdubuffer, pdubuffer.length, address, this.control_port);
             control_socket.send(packet);
         }

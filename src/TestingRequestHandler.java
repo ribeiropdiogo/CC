@@ -138,7 +138,7 @@ public class TestingRequestHandler implements Runnable{
                             System.out.println("> RequestHandler: Received success message ");
                         } else {
                             int fragment = Integer.parseInt(new String(pdu.getData()));
-                            sendFragment(identifier,fragment,i,real_length,address,pdufragments.get(fragment));
+                            sendFragment(identifier,fragment-1,i,real_length,address,pdufragments.get(fragment));
                             System.out.println("> RequestHandler: Resending fragment " + fragment);
                         }
                     }
