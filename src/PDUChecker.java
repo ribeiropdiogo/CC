@@ -15,16 +15,12 @@ public class PDUChecker implements Runnable{
 
     final String secretKey = "HelpMeObiWanKenobi!";
 
-    public PDUChecker(Map<String, SortedSet<PDU>> ps, Set<String> s, String id, int cport) {
+    public PDUChecker(Map<String, SortedSet<PDU>> ps, Set<String> s, String id, int cport, DatagramSocket csock) {
         this.identifier = id;
         this.suspects = s;
         this.pdus = ps;
         this.control_port = cport;
-        try {
-            this.control_socket = new DatagramSocket(control_port);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
+        this.control_socket = csock;
     }
 
     private Set<Integer> missingFragments(){
