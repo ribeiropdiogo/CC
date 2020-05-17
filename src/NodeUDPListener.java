@@ -140,7 +140,7 @@ public class NodeUDPListener implements Runnable{
                     Set<String> s = pduPackets.keySet();
 
                     for (String id : s)
-                        if (stalled(id) && !suspects.contains(id)) {
+                        if (stalled(id) && !suspects.contains(id) && !served.contains(id)) {
                             System.out.println("> UDPListener: Anti-Stall mode");
                             suspects.add(id);
                             try {
