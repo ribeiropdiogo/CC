@@ -6,22 +6,84 @@ import java.net.Socket;
 import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Classe responsável pela comunicação de todas as ligações
+ * que chegam a um determinado por via TCP, para a sua conversa em comunicação
+ * por UDP.
+ */
 public class NodeTCPSpeaker implements Runnable {
 
+    /**
+     * Define o socket que permite a comunicação da aplicação original com o nodo.
+     */
     private Socket external_socket_out;
-    private PrintWriter out;
-    private BufferedReader in;
-    private int outside_port;
-    private SortedSet<Request> requests;
-    private String target_address;
-    private int protected_port, control_port;
-    private volatile boolean running = true;
-    private int contador = 0;
-    private DatagramSocket UDPsocket, control_socket;
 
+    /**
+     * Permite materializar um escrito para o processamento de resultado formatado.
+     */
+    private PrintWriter out;
+
+    /**
+     * Buffer de leitura, por parte de outas componentes.
+     */
+    private BufferedReader in;
+
+    /**
+     * Porta de comunicação com a aplicação, usada para falar com o servidor. Por exemplo,
+     * no caso de usamos wget, utilizariamos a outside_port 80, que é a porta usada por essa ferramenta.
+     */
+    private int outside_port;
+
+    /**
+     * Fila de espera com todos os pedidos a serem processados.
+     */
+    private SortedSet<Request> requests;
+
+    /**
+     * Define o endereço do destino.
+     */
+    private String target_address;
+
+    /**
+     * Define a porta reservada a comunicação de PDUs entre nós da rede AnonGW.
+     */
+    private int protected_port;
+
+    /**
+     * Porta reservada à comunicação de controlo de erros.
+     */
+    private int control_port;
+
+    /**
+     * Indica o status do nodo atual. true se estiver em uso, false caso contrário.
+     */
+    private volatile boolean running = true;
+
+    /**
+     * Contador utilizado internamente para o funcionamento do nodo.
+     */
+    private int contador = 0;
+
+    /**
+     * Socket que define a comunição de PDUs entre nodos da rede.
+     */
+    private DatagramSocket UDPsocket;
+
+    /**
+     * Socket reservado à comunicação de controlo de erros.
+     */
+    private DatagramSocket control_socket;
+
+    /**
+     * Chave encriptação, utilizada sobre todos os conteudos inseridos dentro da rede.
+     */
     final String secretKey = "HelpMeObiWanKenobi!";
 
-
+    /**
+     * Inicializa o TCP Speaker com todas as variaveis necessárias ao seu funcionamento.
+     * É importante denotar que os argumentos utilizados representam na verdade objetos partilhados entres
+     * todas as diversas entidades do sistema.
+     */
     public NodeTCPSpeaker(int s, SortedSet<Request> r, String target, int port, DatagramSocket socket, int cport, DatagramSocket csock) {
         this.outside_port = s;
         this.requests = r;
@@ -32,6 +94,15 @@ public class NodeTCPSpeaker implements Runnable {
         this.control_socket = csock;
     }
 
+    /**
+     * Inicializa a thread responsável pelo handling dos pedidos.
+     *
+     * @param s Define o socket para comunição de pedidos para a rede AnonGW.
+     * @param r Pedido a ser processador.
+     * @param address Define o endereço origem do pedido.
+     *
+     * @throws IOException Erro de I/O relacionado com threads.
+     */
     public void startRequestHandler(DatagramSocket s, Request r, int j, String address) throws IOException {
 
         Thread handler = new Thread(){
@@ -48,7 +119,9 @@ public class NodeTCPSpeaker implements Runnable {
         handler.start();
     }
 
-
+    /**
+     * Executa o speaker, de forma a que este esteja sempre a processar novos pedidos.
+     */
     public void run() {
         try {
             int i = 0;
@@ -61,7 +134,7 @@ public class NodeTCPSpeaker implements Runnable {
                 if (requests.size() > 0) {
                     external_socket_out = new Socket(target_address, outside_port);
                     Request r = requests.first();
-                    //r.printRequest();
+                    
                     if (r.getStatus(secretKey).equals("na")) {
                         r.setStatus("ad",secretKey);
                         System.out.println("> Speaker: Found request!");
@@ -86,7 +159,6 @@ public class NodeTCPSpeaker implements Runnable {
                         System.out.println("> TCPSpeaker: Request has been served at destination!");
                         br.close();
 
-                        //r.printRequest();
                         external_socket_out.close();
 
                         //enviar o request via udp de volta
