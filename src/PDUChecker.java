@@ -6,16 +6,49 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A classe PDUChecker é responsaveç por efetuar os pedidos de retransmissão de fragmentos
+ * que possam ter-se perdido ou estar atrasados. Esta classe traduz-se numa thread.
+ */
 public class PDUChecker implements Runnable{
+    /**
+     * Contém o identificador relativo ao PDU.
+     */
     private String identifier;
+    /**
+     * Contém todos os ids de PDU's suspeitos de terem algum problema.
+     */
     private Set<String> suspects;
+    /**
+     * Contém o map dos ids de PDU's e dos seus respetivos fragmentos.
+     */
     private Map<String,SortedSet<PDU>> pdus;
+    /**
+     * Contém o boolen que nos permite quebrar a execução.
+     */
     private volatile boolean running = true;
+    /**
+     * Contém o socket udp para envio de PDU's de controlo.
+     */
     private DatagramSocket control_socket;
+    /**
+     * Contém a porta para envio de PDU's de controlo.
+     */
     private int control_port;
 
+    /**
+     * Contém a chave de desencriptação.
+     */
     final String secretKey = "HelpMeObiWanKenobi!";
 
+    /**
+     * Construtor para a clasee PDUChecker.
+     * @param   ps      map dos ids de PDU's e dos seus respetivos fragmentos
+     * @param   s       conjunto de ids suspeitos
+     * @param   id      identificador do PDU
+     * @param   cport   porta de controlo
+     * @param   csock   socket de controlo
+     */
     public PDUChecker(Map<String, SortedSet<PDU>> ps, Set<String> s, String id, int cport, DatagramSocket csock) {
         this.identifier = id;
         this.suspects = s;
@@ -24,6 +57,10 @@ public class PDUChecker implements Runnable{
         this.control_socket = csock;
     }
 
+    /**
+     * Esta função verifica quais são os fragmentos que faltam para que o Request possa ser montado.
+     * @return          conjunto dos fragmentos em falta
+     */
     private Set<Integer> missingFragments(){
         Set<Integer> present = new HashSet<>();
         Set<Integer> missing = new HashSet<>();
@@ -43,6 +80,11 @@ public class PDUChecker implements Runnable{
         return missing;
     }
 
+    /**
+     * Esta função serializa um dado objeto.
+     * @param   obj     objeto
+     * @return          objeto serializado
+     */
     public static byte[] serialize(Object obj) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream os = new ObjectOutputStream(out);
@@ -55,6 +97,10 @@ public class PDUChecker implements Runnable{
         return b;
     }
 
+    /**
+     * Esta função pede o reenvio dos fragmentos fornecidos.
+     * @param   fragments   conjunto com os ids dos fragmentos em falta
+     */
     private void resendFragment(Set<Integer> fragments) throws IOException {
         String[] ip = this.identifier.split("\\s+");
         InetAddress address = InetAddress.getByName(ip[0]);
@@ -75,6 +121,11 @@ public class PDUChecker implements Runnable{
         }
     }
 
+    /**
+     * Esta função verifica se estão presentes todos os fragmentos.
+     * @param   id   id do PDU em questão
+     * @return       valor booleano da resposta
+     */
     private boolean allFragments(String id){
         SortedSet<PDU> fragments = pdus.get(id);
         PDU p = fragments.first();
@@ -84,6 +135,9 @@ public class PDUChecker implements Runnable{
         else return false;
     }
 
+    /**
+     * Ciclo de execução da thread.
+     */
     public void run() {
         while (running){
             try {

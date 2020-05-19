@@ -1,0 +1,204 @@
+Index: src/Model/NodeTCPSpeaker.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package Model;\r\n\r\nimport java.io.*;\r\nimport java.net.Socket;\r\nimport java.util.Queue;\r\nimport java.util.SortedSet;\r\nimport java.util.concurrent.TimeUnit;\r\n\r\npublic class NodeTCPSpeaker implements Runnable {\r\n\r\n    private Socket external_socket_out;\r\n    private PrintWriter out;\r\n    private BufferedReader in;\r\n    private int outside_port;\r\n    private SortedSet<Request> requests;\r\n    private String target_address;\r\n    private volatile boolean running = true;\r\n    private int contador = 0;\r\n\r\n    final String secretKey = \"HelpMeObiWanKenobi!\";\r\n\r\n\r\n    public NodeTCPSpeaker(int s, SortedSet<Request> r, String target) {\r\n        this.outside_port = s;\r\n        this.requests = r;\r\n        this.target_address = target;\r\n    }\r\n\r\n\r\n    public void run() {\r\n        try {\r\n            while (running) {\r\n                try {\r\n                    TimeUnit.MILLISECONDS.sleep(250);\r\n                } catch (InterruptedException e) {\r\n                    e.printStackTrace();\r\n                }\r\n                if (requests.size() > 0) {\r\n                    external_socket_out = new Socket(target_address, outside_port);\r\n                    Request r = requests.first();\r\n                    //r.printRequest();\r\n                    if (r.getStatus(secretKey).equals(\"na\")) {\r\n                        r.setStatus(\"ad\",secretKey);\r\n                        System.out.println(\"> Speaker: Found request!\");\r\n\r\n\r\n                        System.out.println(\"> Speaker: Sent request to server\");\r\n                        // Envia o pedido ao servidor de destino\r\n                        PrintWriter pw = new PrintWriter(external_socket_out.getOutputStream());\r\n                        pw.println(r.getMessage(secretKey));\r\n                        pw.println();\r\n                        pw.flush();\r\n\r\n\r\n                        System.out.println(\"> Speaker: Getting response from server\");\r\n                        // Recebe a resposta do servidor de destino\r\n                        BufferedReader br = new BufferedReader(new InputStreamReader(external_socket_out.getInputStream()));\r\n                        String t;\r\n                        while ((t = br.readLine()) != null)\r\n                            r.concatenateResponse(t,secretKey);\r\n                        r.setStatus(\"sd\",secretKey);\r\n\r\n                        System.out.println(\"> Speaker: Model.Request has been served at destination!\");\r\n                        br.close();\r\n\r\n                        //r.printRequest();\r\n                        external_socket_out.close();\r\n                    }\r\n                }\r\n\r\n            }\r\n        } catch(Exception e){\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n}\r\n
+===================================================================
+--- src/Model/NodeTCPSpeaker.java	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ src/NodeTCPSpeaker.java	(date 1589020488726)
+@@ -1,8 +1,5 @@
+-package Model;
+-
+ import java.io.*;
+ import java.net.Socket;
+-import java.util.Queue;
+ import java.util.SortedSet;
+ import java.util.concurrent.TimeUnit;
+ 
+Index: src/Model/NodeTCPListener.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package Model;\r\n\r\nimport java.io.*;\r\nimport java.net.Socket;\r\nimport java.util.Queue;\r\nimport java.util.SortedSet;\r\nimport java.util.concurrent.TimeUnit;\r\n\r\npublic class NodeTCPListener implements Runnable {\r\n\r\n    private String target_address;\r\n    private String source_address;\r\n    private Socket socket;\r\n    private SortedSet<Request> requests;\r\n    private Boolean running;\r\n\r\n    final String secretKey = \"HelpMeObiWanKenobi!\";\r\n\r\n    public NodeTCPListener(Socket s, SortedSet<Request> r, String address) {\r\n        this.socket = s;\r\n        this.requests = r;\r\n        this.target_address = address;\r\n        this.running = true;\r\n    }\r\n\r\n    private boolean repeatedRequest(String sourceAddress, String request) {\r\n        boolean r = false;\r\n\r\n        if (this.requests.size() > 0){\r\n            for (Request req : this.requests)\r\n                if (req.getOrigin_address(secretKey).equals(sourceAddress))\r\n                    r = true;\r\n        }\r\n\r\n        return r;\r\n    }\r\n\r\n    public void run() {\r\n        try {\r\n            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));\r\n            final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(socket.getOutputStream()), \"UTF-8\"));\r\n\r\n            final String data = in.readLine();\r\n            System.out.println(\"> Listener: Established new connection with outside\");\r\n                if (!socket.getRemoteSocketAddress().toString().equals(target_address)) {\r\n                    final Request r = new Request(socket.getRemoteSocketAddress().toString().substring(1),secretKey);\r\n                    r.setMessage(data,secretKey);\r\n\r\n                    //r.printRequest();\r\n\r\n                    if (!repeatedRequest(socket.getRemoteSocketAddress().toString().substring(1), data)) {\r\n                        this.requests.add(r);\r\n                        out.write(\"\");\r\n                        System.out.println(\"> Listener: Added new request\");\r\n                        System.out.println(\"> Listener: Queue size is \" + requests.size());\r\n\r\n\r\n                                while (running) {\r\n                                    /*\r\n                                    try {\r\n                                        TimeUnit.SECONDS.sleep(5);\r\n                                    } catch (InterruptedException e) {\r\n                                        e.printStackTrace();\r\n                                    }*/\r\n                                    while (!r.getStatus(secretKey).equals(\"so\")) {\r\n                                        //System.out.println(r.getStatus());\r\n                                        try {\r\n                                            if (r.getStatus(secretKey).equals(\"sd\")) {\r\n                                                System.out.println(\"> Listener: Request has been served at destination!\");\r\n                                                r.setStatus(\"to\",secretKey);\r\n\r\n                                                //Envia a resposta\r\n                                                Object[] rarray = r.getResponse(secretKey);\r\n                                                for (Object s : rarray)\r\n                                                    out.write(s.toString());\r\n\r\n                                                out.flush();\r\n\r\n                                                r.setStatus(\"so\",secretKey);\r\n                                                System.out.println(\"> Listener: Request has been served at origin!\");\r\n\r\n                                                requests.remove(r);\r\n                                            }\r\n                                        } catch (Exception e) {\r\n                                            e.printStackTrace();\r\n                                        }\r\n                                    }\r\n                                    System.out.println(\"> Listener: Model.Request has been removed from Queue!\");\r\n                                    running = false;\r\n                                }\r\n\r\n\r\n                    }\r\n\r\n\r\n\r\n            }\r\n\r\n\r\n\r\n            socket.close();\r\n            out.flush();\r\n            System.out.println(\"> Listener: I'm dead inside :(\");\r\n        } catch (Exception e) {\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n}\r\n
+===================================================================
+--- src/Model/NodeTCPListener.java	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ src/NodeTCPListener.java	(date 1589020488657)
+@@ -1,10 +1,6 @@
+-package Model;
+-
+ import java.io.*;
+ import java.net.Socket;
+-import java.util.Queue;
+ import java.util.SortedSet;
+-import java.util.concurrent.TimeUnit;
+ 
+ public class NodeTCPListener implements Runnable {
+ 
+Index: src/Model/NodeUDPListener.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package Model;\r\n\r\nimport java.io.*;\r\nimport java.net.*;\r\nimport java.util.Iterator;\r\nimport java.util.Set;\r\nimport java.util.SortedSet;\r\n\r\npublic class NodeUDPListener implements Runnable{\r\n\r\n    private PrintWriter out;\r\n    private BufferedReader in;\r\n    private SortedSet<Request> requests;\r\n    private Set<String> peers;\r\n    private DatagramSocket socket;\r\n    private boolean running;\r\n    private byte[] buf = new byte[256];\r\n    private InetAddress address;\r\n    private int port;\r\n\r\n    public NodeUDPListener(String my_address) {\r\n        try {\r\n            socket = new DatagramSocket();\r\n        } catch (SocketException e) {\r\n            e.printStackTrace();\r\n        }\r\n        try {\r\n            this.address = InetAddress.getByName(my_address);\r\n        } catch (UnknownHostException e) {\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n\r\n    public void run() {\r\n        running = true;\r\n\r\n        while (running) {\r\n            DatagramPacket packet = new DatagramPacket(buf, buf.length);\r\n            try {\r\n                socket.receive(packet);\r\n            } catch (IOException e) {\r\n                e.printStackTrace();\r\n            }\r\n            ByteArrayInputStream bis = new ByteArrayInputStream(buf);\r\n            ObjectInput in = null;\r\n            try {\r\n                try {\r\n                    in = new ObjectInputStream(bis);\r\n                } catch (IOException e) {\r\n                    e.printStackTrace();\r\n                }\r\n                try {\r\n                    Object o = in.readObject();\r\n                    Request r = (Request) o;\r\n                    if (buf[0] == '\\0') {\r\n                        running = false;\r\n                        continue;\r\n                    }\r\n                } catch (ClassNotFoundException e) {\r\n                    e.printStackTrace();\r\n                } catch (IOException e) {\r\n                    e.printStackTrace();\r\n                }\r\n            } finally {\r\n                try {\r\n                    if (in != null) {\r\n                        in.close();\r\n                    }\r\n                } catch (IOException ex) {\r\n                    // ignore close exception\r\n                }\r\n            }\r\n        }\r\n        socket.close();\r\n    }\r\n}\r\n
+===================================================================
+--- src/Model/NodeUDPListener.java	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ src/NodeUDPListener.java	(date 1589020488650)
+@@ -1,8 +1,5 @@
+-package Model;
+-
+ import java.io.*;
+ import java.net.*;
+-import java.util.Iterator;
+ import java.util.Set;
+ import java.util.SortedSet;
+ 
+Index: notas.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- notas.txt	(date 1589019844862)
++++ notas.txt	(date 1589019844862)
+@@ -0,0 +1,13 @@
++#start server de ficheiros
++> mini-httpd -d /srv/ftp/
++> ps –ef
++
++#start core
++> sudo /etc/init.d/core-daemon start
++> core-gui
++
++#comando anon
++> anonGW  target-server 10.3.3.1 port 80 overlay-peers 10.1.1.2 10.4.4.2 10.4.4.3
++
++#comando wget
++> wget http://10.1.1.2/ficheiro
+\ No newline at end of file
+Index: src/Model/Node.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package Model;\r\n\r\nimport java.io.*;\r\nimport java.net.*;\r\nimport java.util.*;\r\nimport java.util.concurrent.TimeUnit;\r\nimport Exceptions.*;\r\n\r\npublic class Node {\r\n\r\n    private String my_address;\r\n    private Set<String> peers;\r\n    private String target_address;\r\n    private int outside_port;\r\n    private int protected_port = 6666;\r\n    private ServerSocket external_socket_in;\r\n    private Socket external_socket_out;\r\n    private DatagramSocket internal_socket_out, internal_socket_in;\r\n    private SortedSet<Request> requests;\r\n\r\n    /* CONSTRUTORES */\r\n\r\n    public Node() {\r\n\r\n        try {\r\n            this.my_address = InetAddress.getLocalHost().getHostAddress();\r\n        } catch (UnknownHostException e) {\r\n            e.printStackTrace();\r\n        }\r\n\r\n        peers = new HashSet<>();\r\n        Comparator comparator = new RequestComparator();\r\n        requests = new TreeSet(comparator);\r\n\r\n        try {\r\n            internal_socket_in = new DatagramSocket();\r\n            internal_socket_out = new DatagramSocket();\r\n        } catch (SocketException e) {\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n\r\n    // Esta função recebe os paramtros da linha de comandos e preenche a estrutura\r\n    // e retorna erro se não forem fornecidos todos os parametros\r\n    public void setupNode(String[] args) throws InsufficientParametersException {\r\n\r\n        int set_target_server = 0;\r\n        int set_port = 0;\r\n        int set_peers = 0;\r\n\r\n        for (int i = 0; i < args.length; i++) {\r\n            if (args[i].equals(\"target-server\")) {\r\n                try {\r\n                    target_address = InetAddress.getByName(args[i+1]).getHostAddress();\r\n                } catch (UnknownHostException e) {\r\n                    e.printStackTrace();\r\n                }\r\n                set_target_server = 1;\r\n            }\r\n\r\n            if (args[i].equals(\"port\")) {\r\n                outside_port = Integer.parseInt(args[i+1]);\r\n                set_port = 1;\r\n            }\r\n\r\n            if (args[i].equals(\"overlay-peers\")) {\r\n                for (int j = i+1; j < args.length; j++) {\r\n                    try {\r\n                        if (!InetAddress.getByName(args[j]).getHostAddress().equals(my_address))\r\n                            peers.add(InetAddress.getByName(args[j]).getHostAddress());\r\n                    } catch (UnknownHostException e) {\r\n                        e.printStackTrace();\r\n                    }\r\n                }\r\n                set_peers = 1;\r\n            }\r\n        }\r\n\r\n        if (set_target_server + set_port + set_peers < 3 ) {\r\n            throw new InsufficientParametersException(\"Insufficient Parameters\");\r\n        }\r\n    }\r\n\r\n    public void printNodeInfo() {\r\n        System.out.println(\"Model.Node info:\");\r\n        System.out.println(\"Model.Node Address: \" + my_address);\r\n        System.out.print(\"Model.Node peers: \");\r\n        System.out.println(Arrays.toString(peers.toArray()));\r\n        System.out.println(\"Target Address: \" + target_address);\r\n        System.out.println(\"Outside Port: \" + outside_port);\r\n        System.out.println(\"Protected Port: \" + protected_port);\r\n    }\r\n\r\n    // Esta função inicializa o socket tcp na porta definida e cria uma thread para gerir os pedidos que chegam\r\n    public void startTCPListener() throws IOException {\r\n        external_socket_in = new ServerSocket(this.outside_port);\r\n\r\n        Thread listener = new Thread(){\r\n            public void run(){\r\n                while (true) {\r\n                    Socket socket = null;\r\n                    try {\r\n                        socket = external_socket_in.accept();\r\n                        NodeTCPListener nl = new NodeTCPListener(socket, requests, target_address);\r\n                        new Thread(nl).start();\r\n                    } catch (Exception e) {\r\n                        e.printStackTrace();\r\n                    }\r\n                }\r\n            }\r\n        };\r\n\r\n        listener.start();\r\n    }\r\n\r\n    // Esta função é usada para o nó comunicar com o servidor de destino\r\n    public void startTCPSpeaker() {\r\n        Thread speaker = new Thread(){\r\n            public void run(){\r\n\r\n                    try {\r\n                        NodeTCPSpeaker ns = new NodeTCPSpeaker(outside_port, requests, target_address);\r\n                        new Thread(ns).start();\r\n                    } catch (Exception e) {\r\n                        e.printStackTrace();\r\n                    }\r\n                }\r\n\r\n        };\r\n\r\n        speaker.start();\r\n    }\r\n\r\n    // Só funciona quando o TCPListener estiver ativado\r\n    // Esta função é usada para o nó comunicar com o segundo nó destino\r\n    public void startUDPSpeaker() {\r\n    }\r\n\r\n\r\n    // Esta função é usada para o nó ler a comunicação vinda do primeiro nó\r\n    public void startUDPListener() {\r\n\r\n    }\r\n\r\n    // so para testes\r\n    public void queuesize() {\r\n        System.out.println(\"uelele: \" + this.requests.size());\r\n    }\r\n}\r\n
+===================================================================
+--- src/Model/Node.java	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ src/Node.java	(date 1589020488720)
+@@ -1,10 +1,6 @@
+-package Model;
+-
+ import java.io.*;
+ import java.net.*;
+ import java.util.*;
+-import java.util.concurrent.TimeUnit;
+-import Exceptions.*;
+ 
+ public class Node {
+ 
+Index: src/AnonGW.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import java.util.concurrent.TimeUnit;\r\nimport Exceptions.*;\r\nimport Model.Node;\r\n\r\npublic class AnonGW {\r\n\r\n    private static Node node;\r\n\r\n    public static void main(String[] args) {\r\n\tSystem.out.println(\"> AnonGW started\");\r\n        node = new Node();\r\n        try {\r\n            node.setupNode(args);\r\n            node.printNodeInfo();\r\n            System.out.println(\"TCP Listener Start\");\r\n            node.startTCPListener();\r\n            System.out.println(\"TCP Speaker Start\");\r\n            node.startTCPSpeaker();\r\n            System.out.println(\"UDP Listener Start\");\r\n            node.startUDPListener();\r\n            System.out.println(\"UDP Speaker Start\");\r\n            node.startUDPSpeaker();\r\n            /*\r\n            while (true){\r\n                TimeUnit.SECONDS.sleep(5);\r\n                node.queuesize();\r\n            }*/\r\n\r\n        } catch (Exception e){\r\n            System.out.println(e);\r\n        }\r\n\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/AnonGW.java	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ src/AnonGW.java	(date 1589020488583)
+@@ -1,6 +1,4 @@
+-import java.util.concurrent.TimeUnit;
+ import Exceptions.*;
+-import Model.Node;
+ 
+ public class AnonGW {
+ 
+Index: src/Model/AES.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package Model;\r\n\r\nimport java.io.UnsupportedEncodingException;\r\nimport java.security.MessageDigest;\r\nimport java.security.NoSuchAlgorithmException;\r\nimport java.util.Arrays;\r\nimport java.util.Base64;\r\n\r\nimport javax.crypto.Cipher;\r\nimport javax.crypto.spec.SecretKeySpec;\r\n\r\npublic class AES {\r\n\r\n    /**\r\n     * VARIÁVEIS DE INSTÂNCIA\r\n     */\r\n\r\n    private static SecretKeySpec secretKey;\r\n    private static byte[] key;\r\n\r\n    /**\r\n     * SETTER\r\n     */\r\n\r\n    public static void setKey(String myKey)\r\n    {\r\n        MessageDigest sha = null;\r\n        try {\r\n            key = myKey.getBytes(\"UTF-8\");\r\n            sha = MessageDigest.getInstance(\"SHA-1\");\r\n            key = sha.digest(key);\r\n            key = Arrays.copyOf(key, 16);\r\n            secretKey = new SecretKeySpec(key, \"AES\");\r\n        }\r\n        catch (NoSuchAlgorithmException e) {\r\n            e.printStackTrace();\r\n        }\r\n        catch (UnsupportedEncodingException e) {\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n\r\n    /**\r\n     * MÉTODOS\r\n     */\r\n\r\n    public static String encrypt(String strToEncrypt, String secret)\r\n    {\r\n        try\r\n        {\r\n            setKey(secret);\r\n            Cipher cipher = Cipher.getInstance(\"AES/ECB/PKCS5Padding\");\r\n            cipher.init(Cipher.ENCRYPT_MODE, secretKey);\r\n            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes(\"UTF-8\")));\r\n        }\r\n        catch (Exception e)\r\n        {\r\n            System.out.println(\"Error while encrypting: \" + e.toString());\r\n        }\r\n        return null;\r\n    }\r\n\r\n    public static String decrypt(String strToDecrypt, String secret)\r\n    {\r\n        try\r\n        {\r\n            setKey(secret);\r\n            Cipher cipher = Cipher.getInstance(\"AES/ECB/PKCS5PADDING\");\r\n            cipher.init(Cipher.DECRYPT_MODE, secretKey);\r\n            return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));\r\n        }\r\n        catch (Exception e)\r\n        {\r\n            System.out.println(\"Error while decrypting: \" + e.toString());\r\n        }\r\n        return null;\r\n    }\r\n}
+===================================================================
+--- src/Model/AES.java	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ src/AES.java	(date 1589020488665)
+@@ -1,5 +1,3 @@
+-package Model;
+-
+ import java.io.UnsupportedEncodingException;
+ import java.security.MessageDigest;
+ import java.security.NoSuchAlgorithmException;
+Index: src/Model/Request.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package Model;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Objects;\r\n\r\npublic class Request {\r\n\r\n    private long creationTime;\r\n    private String origin_address;\r\n    private String message;\r\n    private List<String> response;\r\n    private String status; // na -> não atendido / ad -> atendido no destino / sd -> servido no destino / to -> a ser transmitido à origem / so -> servido na origem / tbd -> to be deleted\r\n\r\n    public Request(String address, String secretKey){\r\n        this.creationTime = System.currentTimeMillis();\r\n        this.origin_address = AES.encrypt(address, secretKey) ;;\r\n        this.status = AES.encrypt(\"na\", secretKey) ;;\r\n        this.response = new ArrayList();\r\n    }\r\n\r\n    public String getOrigin_address(String secretKey) {\r\n        return AES.decrypt(origin_address, secretKey);\r\n    }\r\n\r\n    public String getMessage(String secretKey) {\r\n        return AES.decrypt(message, secretKey);\r\n    }\r\n\r\n    public long getCreationTime(){\r\n        return this.creationTime;\r\n    }\r\n\r\n    public synchronized void setMessage(String message, String secretKey) {\r\n        this.message = AES.encrypt(message, secretKey);\r\n    }\r\n\r\n    public void concatenateResponse(String message, String secretKey){\r\n        String s = message + \"\\r\\n\";\r\n        this.response.add(AES.encrypt(s, secretKey));\r\n    }\r\n\r\n    public Object[] getResponse(String secretKey){\r\n        List<String> decrypted = new ArrayList<>();\r\n\r\n        for (String s : this.response)\r\n            decrypted.add(AES.decrypt(s, secretKey));\r\n\r\n        return decrypted.toArray();\r\n    }\r\n\r\n    public synchronized String getStatus(String secretKey) {\r\n        return AES.decrypt(this.status, secretKey);\r\n    }\r\n\r\n    public synchronized void setStatus(String status, String secretKey) {\r\n        this.status = AES.encrypt(status, secretKey);\r\n    }\r\n\r\n    @Override\r\n    public boolean equals(Object o) {\r\n        if (this == o) return true;\r\n        if (o == null || getClass() != o.getClass()) return false;\r\n        Request request = (Request) o;\r\n        return Objects.equals(origin_address, request.origin_address) &&\r\n                Objects.equals(message, request.message);\r\n    }\r\n\r\n    public void printRequest(String secretKey){\r\n        System.out.println(\"Request: \");\r\n        System.out.println(\"Source: \" + AES.decrypt(this.origin_address, secretKey));\r\n        System.out.println(\"Message: \" + AES.decrypt(this.message, secretKey));\r\n        System.out.println(\"Creation Time: \" + this.creationTime);\r\n        System.out.println(\"Status: \" + AES.decrypt(this.status, secretKey));\r\n    }\r\n}\r\n
+===================================================================
+--- src/Model/Request.java	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ src/Request.java	(date 1589020488590)
+@@ -1,5 +1,3 @@
+-package Model;
+-
+ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.Objects;
+Index: src/Model/RequestComparator.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package Model;\r\n\r\nimport Model.Request;\r\n\r\nimport java.util.Comparator;\r\n\r\npublic class RequestComparator implements Comparator<Request> {\r\n\r\n    public int compare(Request request1, Request request2) {\r\n        // for comparison\r\n        if(request1.getCreationTime()==request2.getCreationTime()) {\r\n            return 0;\r\n        } else if(request1.getCreationTime()>request2.getCreationTime()) {\r\n            return 1;\r\n        } else {\r\n            return -1;\r\n        }\r\n    }\r\n}
+===================================================================
+--- src/Model/RequestComparator.java	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ src/RequestComparator.java	(date 1589020488714)
+@@ -1,7 +1,3 @@
+-package Model;
+-
+-import Model.Request;
+-
+ import java.util.Comparator;
+ 
+ public class RequestComparator implements Comparator<Request> {
+Index: src/Model/AnonPacket.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package Model;\r\n\r\nimport java.nio.ByteBuffer;\r\nimport java.util.Arrays;\r\n\r\npublic final class AnonPacket {\r\n\r\n\tpublic static final int MAX_SIZE = 1000;\r\n\tprivate static final int SEQ_OSET = 0;\r\n\tprivate static final int ACK_OSET = 32;\r\n\r\n\tprivate static final int SYN_FLAG = 64;\r\n\tprivate static final int ACK_FLAG = 65;\r\n\tprivate static final int FIN_FLAG = 66;\r\n\r\n\tprivate ByteBuffer workbuf;\r\n\r\n\t/* CONSTRUTORES */\r\n\r\n\tpublic AnonPacket() {\r\n\t\tthis.workbuf = ByteBuffer.allocate(MAX_SIZE);\r\n\t}\r\n\r\n\tpublic AnonPacket(byte[] buf) {\r\n\t\tthis.workbuf = ByteBuffer.wrap(buf);\r\n\t}\r\n\r\n\t/* GETTERS */\r\n\r\n\tpublic byte[] getRawData() {\r\n\t\treturn workbuf.array();\r\n\t}\r\n\r\n\tpublic int getSeqNumber() {\r\n\t\treturn workbuf.getInt(SEQ_OSET);\r\n\t}\r\n\r\n\tpublic int getAckNumber() {\r\n\t\treturn workbuf.getInt(ACK_OSET);\r\n\t}\r\n\r\n\tpublic byte[] getData() {\r\n\t\treturn Arrays.copyOfRange(workbuf.array(), FIN_FLAG + 1, MAX_SIZE);\r\n\t}\r\n\r\n\tpublic boolean isSyn() {\r\n\t\treturn getBool(SYN_FLAG);\r\n\t}\r\n\r\n\tpublic boolean isAck() {\r\n\t\treturn getBool(ACK_FLAG);\r\n\t}\r\n\r\n\tpublic boolean isFin() {\r\n\t\treturn getBool(FIN_FLAG);\r\n\t}\r\n\r\n\t/* SETTERS */\r\n\r\n\tpublic AnonPacket setSyn(boolean flag) {\r\n\t\treturn putBool(SYN_FLAG, flag);\r\n\t}\r\n\r\n\tpublic AnonPacket setAck(boolean flag) {\r\n\t\treturn putBool(ACK_FLAG, flag);\r\n\t}\r\n\r\n\tpublic AnonPacket setFin(boolean flag) {\r\n\t\treturn putBool(FIN_FLAG, flag);\r\n\t}\r\n\r\n\tpublic AnonPacket setSeqNumber(int seqnum) {\r\n\t\treturn putInt(SEQ_OSET, seqnum);\r\n\t}\r\n\r\n\tpublic AnonPacket setAckNumber(int acknum) {\r\n\t\treturn putInt(ACK_OSET, acknum);\r\n\t}\r\n\r\n\tpublic AnonPacket setData(byte[] buf) {\r\n\t\tint ind = FIN_FLAG + 1;\r\n\t\tint len = MAX_SIZE - ind;\r\n\t\tif(buf.length < len) {\r\n\t\t\tlen = buf.length;\r\n\t\t}\r\n\t\tfor(int i = 0; i < len; i++) {\r\n\t\t\tworkbuf.put(ind + i, buf[i]);\r\n\t\t}\r\n\t\treturn this;\r\n\t}\r\n\r\n\t/* METODOS */\r\n\r\n\tprivate AnonPacket putBool(int index, boolean val) {\r\n\t\tshort x = 0;\r\n\t\tif(val) {\r\n\t\t\tx = 1;\r\n\t\t}\r\n\t\tworkbuf.putShort(index, x);\r\n\t\treturn this;\r\n\t}\r\n\r\n\tprivate AnonPacket putInt(int index, int num) {\r\n\t\tworkbuf.putInt(index, num);\r\n\t\treturn this;\r\n\t}\r\n\r\n\tprivate boolean getBool(int index) {\r\n\t\tboolean res = false;\r\n\t\tshort flag = workbuf.getShort(index);\r\n\t\tif(flag == 1) {\r\n\t\t\tres = true;\r\n\t\t}\r\n\t\treturn res;\r\n\t}\r\n}
+===================================================================
+--- src/Model/AnonPacket.java	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ src/AnonPacket.java	(date 1589020488632)
+@@ -1,5 +1,3 @@
+-package Model;
+-
+ import java.nio.ByteBuffer;
+ import java.util.Arrays;
+ 
+Index: src/Model/NodeUDPSpeaker.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package Model;\r\n\r\nimport java.io.*;\r\nimport java.net.*;\r\nimport java.util.Iterator;\r\nimport java.util.Set;\r\nimport java.util.SortedSet;\r\n\r\npublic class NodeUDPSpeaker implements Runnable{\r\n\r\n    private PrintWriter out;\r\n    private BufferedReader in;\r\n    private SortedSet<Request> requests;\r\n    private Set<String> peers;\r\n    private DatagramSocket socket;\r\n    private boolean running;\r\n    private byte[] buf = new byte[256];\r\n    private InetAddress address;\r\n    private int port;\r\n\r\n    public NodeUDPSpeaker(SortedSet<Request> r, Set<String> p) {\r\n        this.requests = r;\r\n        this.peers = p;\r\n        try {\r\n            socket = new DatagramSocket(4445);\r\n        } catch (SocketException e) {\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n\r\n    public void run() {\r\n        running = true;\r\n\r\n        while (running) {\r\n            for (Iterator<Request> it = this.requests.iterator(); it.hasNext(); ) {\r\n                Request r = it.next();\r\n                ByteArrayOutputStream bos = new ByteArrayOutputStream();\r\n                ObjectOutputStream out = null;\r\n                try {\r\n                    try {\r\n                        out = new ObjectOutputStream(bos);\r\n                    } catch (IOException e) {\r\n                        e.printStackTrace();\r\n                    }\r\n                    try {\r\n                        out.writeObject(r);\r\n                    } catch (IOException e) {\r\n                        e.printStackTrace();\r\n                    }\r\n                    try {\r\n                        out.flush();\r\n                    } catch (IOException e) {\r\n                        e.printStackTrace();\r\n                    }\r\n                    buf = bos.toByteArray();\r\n                    for (Iterator<String> it2 = this.peers.iterator(); it2.hasNext(); ) {\r\n                        String i = it2.next();\r\n                        try {\r\n                            address = InetAddress.getByName(i);\r\n                        } catch (UnknownHostException e) {\r\n                            e.printStackTrace();\r\n                        }\r\n                    }\r\n                    DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);\r\n                    try {\r\n                        socket.send(packet);\r\n                    } catch (IOException e) {\r\n                        e.printStackTrace();\r\n                    }\r\n                } finally {\r\n                    try {\r\n                        bos.close();\r\n                    } catch (IOException ex) {\r\n                        // ignore close exception\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        socket.close();\r\n    }\r\n}
+===================================================================
+--- src/Model/NodeUDPSpeaker.java	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ src/NodeUDPSpeaker.java	(date 1589020488641)
+@@ -1,5 +1,3 @@
+-package Model;
+-
+ import java.io.*;
+ import java.net.*;
+ import java.util.Iterator;
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"CompilerConfiguration\">\r\n    <bytecodeTargetLevel target=\"12\" />\r\n  </component>\r\n  <component name=\"JavacSettings\">\r\n    <option name=\"ADDITIONAL_OPTIONS_STRING\" value=\"-target 1.6\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/compiler.xml	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ .idea/compiler.xml	(date 1589018413728)
+@@ -3,7 +3,4 @@
+   <component name="CompilerConfiguration">
+     <bytecodeTargetLevel target="12" />
+   </component>
+-  <component name="JavacSettings">
+-    <option name="ADDITIONAL_OPTIONS_STRING" value="-target 1.6" />
+-  </component>
+ </project>
+\ No newline at end of file
+Index: src/Exceptions/InsufficientParametersException.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package Exceptions;\r\n\r\npublic class InsufficientParametersException extends Exception {\r\n    public InsufficientParametersException(String message){\r\n        super(message);\r\n    }\r\n}\r\n
+===================================================================
+--- src/Exceptions/InsufficientParametersException.java	(revision a10dccc57ee381629eea7014048c2504e5087ac6)
++++ src/InsufficientParametersException.java	(date 1589020488624)
+@@ -1,5 +1,3 @@
+-package Exceptions;
+-
+ public class InsufficientParametersException extends Exception {
+     public InsufficientParametersException(String message){
+         super(message);

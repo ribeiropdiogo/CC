@@ -8,25 +8,65 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 
+/**
+ * A classe TestingRequestHandler é aquela que é responsável por enviar um Request via udp para
+ * um nodo da mesma rede. Esta classe traduz-se numa thread. Esta classe serve apenas para efeitos
+ * de teste, induzindo a falha nos fragmentos 2 e 3.
+ */
 public class TestingRequestHandler implements Runnable{
+    /**
+     * Contém os sockets UDP para o envio de PDU's.
+     */
     private DatagramSocket internal_socket, control_socket;
+    /**
+     * Contém os endereços do peer e do nó que pretende enviar o Request.
+     */
     private String peer, nodeadress;
+    /**
+     * Contém o Request a enviar.
+     */
     private Request request;
+    /**
+     * Contém as portas para o envio de PDU's.
+     */
     private int protected_port, control_port;
+    /**
+     * Contém o boolen que nos permite quebrar a execução.
+     */
     private volatile boolean running = true;
+    /**
+     * Contém os fragmentos para enviar.
+     */
     private SortedSet<PDU> fragments;
+    /**
+     * Contém os valores do tamanho máximo do payload, o número do Request, e o tamanho máximo do PDU.
+     */
     private int max_data_chunk = 20 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
+    /**
+     * Contém os arrays para guardar os PDU's em bytes.
+     */
     private byte[] controlbuffer = new byte[pdu_size], pducontrolbuffer = new byte[pdu_size], pduBuffer = new byte[pdu_size];
+    /**
+     * Contém o map que corresponde o número do fragmento aos bytes crrespondentes.
+     */
     private  Map<Integer,byte[]> pdufragments;
 
-    //controlo de pacotes
-    //private int protected_control_port = 8888;
-    //private DatagramSocket internal_control_socket;
-    //private byte[] pduBuffer = new byte[pdu_size];
-    //fim
-
+    /**
+     * Contém a chave para a encriptação.
+     */
     final String secretKey = "HelpMeObiWanKenobi!";
 
+    /**
+     * Construtor para a clasee TestingRequestHandler.
+     * @param   socket      socket UDP
+     * @param   r           Request
+     * @param   peer        peer de destino
+     * @param   port        porta de envio
+     * @param   requestn    número do Request
+     * @param   node        endereço do nodo de origem
+     * @param   csort       socket de controlo
+     * @param   cport       porta de controlo
+     */
     public TestingRequestHandler(DatagramSocket socket, Request r, String peer, int port, int requestn, String node, DatagramSocket csort, int cport){
         this.internal_socket = socket;
         this.request = r;
@@ -39,6 +79,11 @@ public class TestingRequestHandler implements Runnable{
         this.control_socket = csort;
     }
 
+    /**
+     * Esta função serializa um dado objeto.
+     * @param   obj     objeto
+     * @return          objeto serializado
+     */
     public static byte[] serialize(Object obj) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream os = new ObjectOutputStream(out);
@@ -51,6 +96,11 @@ public class TestingRequestHandler implements Runnable{
         return b;
     }
 
+    /**
+     * Esta função deserializa um dado array de bytes.
+     * @param   data    objeto em bytes
+     * @return          objeto deserializado
+     */
     private static Object deserialize(byte[] data) {
         Object o = null;
         try {
@@ -64,6 +114,15 @@ public class TestingRequestHandler implements Runnable{
         return o;
     }
 
+    /**
+     * Esta função envia um PDU para o destino via UDP.
+     * @param   identifier    identificador do PDU
+     * @param   j             numero do fragmento
+     * @param   i             total de fragmentos
+     * @param   real_length   tamanho real do Request
+     * @param   address       endereço de destino
+     * @param   buffer        PDU serializado
+     */
     private void sendFragment(String identifier, int j, int i, int real_length, InetAddress address, byte[] buffer) throws IOException {
         PDU pdu = new PDU();
         pdu.setIdentifier(identifier,secretKey);
@@ -102,6 +161,9 @@ public class TestingRequestHandler implements Runnable{
         internal_socket.send(packet);
     }
 
+    /**
+     * Ciclo de execução da thread.
+     */
     public void run() {
         while (running) {
             System.out.println("> Launched RequestHandler");
@@ -119,6 +181,7 @@ public class TestingRequestHandler implements Runnable{
 
 
                 for (int j = 0;j < i;j++){
+                    //Indução da falha no envio de fragmentos
                     if(j!=1 && j!= 2)
                         sendFragment(identifier,j,i,real_length,address,buffer);
                 }
