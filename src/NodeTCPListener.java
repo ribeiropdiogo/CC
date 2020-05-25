@@ -167,7 +167,7 @@ public class NodeTCPListener implements Runnable {
         Thread handler = new Thread(){
             public void run(){
                     try {
-                        RequestHandler rh = new RequestHandler(s,r,getPeer(),port,requestn,node_address,control_socket,control_port);
+                        TestingRequestHandler rh = new TestingRequestHandler(s,r,getPeer(),port,requestn,node_address,control_socket,control_port);
                         new Thread(rh).start();
                     } catch (Exception e) {
                         e.printStackTrace();

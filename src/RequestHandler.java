@@ -41,7 +41,7 @@ public class RequestHandler implements Runnable{
     /**
      * Contém os valores do tamanho máximo do payload, o número do Request, e o tamanho máximo do PDU.
      */
-    private int max_data_chunk = 20 * 1024, requestnumber, pdu_size = max_data_chunk + 256;
+    private int max_data_chunk = 20 * 1, requestnumber, pdu_size = max_data_chunk + 256;
     /**
      * Contém os arrays para guardar os PDU's em bytes.
      */

@@ -42,7 +42,7 @@ public class NodeUDPListener implements Runnable{
     /**
      * Define o tamanho maximo do campo data dos PDUs.
      */
-    private int max_data_chunk = 20 * 1024;
+    private int max_data_chunk = 20 * 1;
 
     /**
      * Define o numero do pedido a ser processado.

@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5e9f91ec-e900-4035-9518-79caffc9d7c2" name="Default Changelist" comment="" />
+    <list default="true" id="5e9f91ec-e900-4035-9518-79caffc9d7c2" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/CC.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/NodeTCPListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/NodeTCPListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/NodeUDPListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/NodeUDPListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RequestHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/RequestHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TestingRequestHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/TestingRequestHandler.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -33,6 +43,8 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
@@ -71,7 +83,9 @@
       <workItem from="1589713257733" duration="12653000" />
       <workItem from="1589818900297" duration="1340000" />
       <workItem from="1589833966497" duration="12000" />
-      <workItem from="1589877286878" duration="7163000" />
+      <workItem from="1589877286878" duration="7887000" />
+      <workItem from="1589902322377" duration="1010000" />
+      <workItem from="1590411501440" duration="3251000" />
     </task>
     <task id="LOCAL-00087" summary="fix">
       <created>1589652020568</created>
